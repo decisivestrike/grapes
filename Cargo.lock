@@ -5,3 +5,10 @@ version = 4
 [[package]]
 name = "grapes"
 version = "0.1.0"
+dependencies = [
+ "grapes-macros",
+]
+
+[[package]]
+name = "grapes-macros"
+version = "0.1.0"
