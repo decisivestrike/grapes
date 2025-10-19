@@ -1,9 +1,15 @@
 pub mod component;
 pub mod effect;
+pub mod reactivity;
 pub mod service;
 pub mod state;
 
-pub use component::Component;
-pub use effect::Effect;
-pub use service::Service;
-pub use state::State;
+pub use component::*;
+pub use effect::*;
+pub use service::*;
+pub use state::*;
+
+pub use grapes_macros::*;
+
+pub use gtk;
+pub use gtk::glib;

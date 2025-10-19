@@ -1,0 +1,12 @@
+[package]
+name = "examples"
+publish = false
+edition = "2024"
+license = "MIT"
+
+[dev-dependencies]
+grapes = { path = "../grapes" }
+
+[[example]]
+name = "counter"
+path = "counter.rs"
