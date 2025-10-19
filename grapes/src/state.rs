@@ -37,33 +37,9 @@ struct StateInner<T> {
 impl<T> StateInner<T> {
     fn new(value: T) -> Self {
         let value = RefCell::new(value);
-        let effects = RefCell::new(vec![]);
+        let effects = Default::default();
 
         Self { value, effects }
-    }
-
-    fn get_untracked(&self) -> Ref<'_, T> {
-        self.value.borrow()
-    }
-
-    fn get(&self) -> Ref<'_, T> {
-        self.handle_active_effect();
-        self.get_untracked()
-    }
-
-    fn set(&self, value: T) {
-        *self.value.borrow_mut() = value;
-        self.run_effects();
-    }
-
-    fn update<U>(&self, updater: U)
-    where
-        U: FnOnce(&mut T),
-    {
-        updater(&mut self.value.borrow_mut());
-
-        self.handle_active_effect();
-        self.run_effects();
     }
 
     fn run_effects(&self) {
@@ -92,26 +68,30 @@ impl<T> State<T> {
     }
 
     pub fn get(&self) -> Ref<'_, T> {
-        self.inner.get()
+        self.inner.handle_active_effect();
+        self.get_untracked()
     }
 
     pub fn get_untracked(&self) -> Ref<'_, T> {
-        self.inner.get_untracked()
+        self.inner.value.borrow()
     }
 
     pub fn set(&self, value: T) {
-        self.inner.set(value);
+        *self.inner.value.borrow_mut() = value;
+        self.inner.run_effects();
     }
 
     pub fn update<U>(&self, updater: U)
     where
         U: FnOnce(&mut T),
     {
-        self.inner.update(updater);
+        updater(&mut self.inner.value.borrow_mut());
+
+        self.inner.handle_active_effect();
+        self.inner.run_effects();
     }
 }
 
-/// Absolutely stupid clone cuz `#[derive(Clone)]` doesnt work
 impl<T> Clone for State<T> {
     fn clone(&self) -> Self {
         Self {
@@ -132,7 +112,6 @@ impl<T: Display> fmt::Display for State<T> {
     }
 }
 
-/// Ops
 impl<T> Add for &State<T>
 where
     T: Add<Output = T> + Copy,
