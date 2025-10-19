@@ -10,3 +10,7 @@ grapes = { path = "../grapes" }
 [[example]]
 name = "counter"
 path = "counter.rs"
+
+[[example]]
+name = "calculator"
+path = "calculator.rs"

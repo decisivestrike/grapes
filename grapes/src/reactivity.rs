@@ -25,3 +25,22 @@ where
         button
     }
 }
+
+impl<T> Reactive<T> for gtk::Label
+where
+    T: ToString + 'static,
+{
+    fn reactive(label: &State<T>) -> Self {
+        let button = gtk::Label::new(Some(&label.get().to_string()));
+
+        effect(clone!(
+            #[strong]
+            button,
+            #[strong]
+            label,
+            move || button.set_label(&label.get().to_string())
+        ));
+
+        button
+    }
+}

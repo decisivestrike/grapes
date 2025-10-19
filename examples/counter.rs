@@ -15,7 +15,7 @@ fn counter() -> impl IsA<gtk::Widget> {
 
 fn main() {
     let application = gtk::Application::builder()
-        .application_id("org.gtk-app.reactivity")
+        .application_id("grapes.counter")
         .build();
 
     application.connect_activate(create_window);
@@ -25,7 +25,7 @@ fn main() {
 fn create_window(application: &gtk::Application) {
     let window = gtk::ApplicationWindow::builder()
         .application(application)
-        .title("Reactivity!!!")
+        .title("Counter")
         .default_width(350)
         .default_height(270)
         .build();
