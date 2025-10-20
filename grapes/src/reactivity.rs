@@ -1,10 +1,21 @@
 use gtk::glib::clone;
 use gtk::prelude::*;
 
-use crate::{State, effect::effect};
+use crate::{State, derived, effect::effect};
 
 pub trait Reactive<T> {
     fn reactive(initial: &State<T>) -> Self;
+
+    fn with_effect<F>(e: F) -> Self
+    where
+        Self: Sized,
+        F: Fn() -> T + 'static,
+        T: 'static,
+    {
+        let derived = derived(e);
+
+        Self::reactive(&derived)
+    }
 }
 
 impl<T> Reactive<T> for gtk::Button
