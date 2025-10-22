@@ -1,16 +1,25 @@
+use std::{fmt, hash};
+
 use crate::Service;
 use gtk::{
     Widget,
     glib::{self, clone, object::IsA},
 };
 
-pub trait Component: Clone + 'static {
+pub trait GtkCompatible:
+    Clone + fmt::Debug + Default + hash::Hash + PartialEq + PartialOrd + Eq + Ord + 'static
+{
     type Root: IsA<Widget>;
+
+    fn root(&self) -> Self::Root;
+
+    fn as_widget_ref(&self) -> &gtk::Widget;
+}
+
+pub trait Component: GtkCompatible {
     type Message: Clone + 'static;
 
     fn update(&self, message: Self::Message);
-
-    fn view(&self) -> Self::Root;
 
     fn connect<T>(&self)
     where

@@ -1,7 +1,10 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
-use syn::{FnArg, GenericArgument, Ident, ItemFn, PathArguments, Type, parse_macro_input};
+use syn::{
+    Data, DeriveInput, Fields, FnArg, GenericArgument, Ident, ItemFn, PathArguments, Type,
+    parse_macro_input,
+};
 
 #[proc_macro_attribute]
 pub fn service(attr: TokenStream, item: TokenStream) -> TokenStream {
@@ -50,4 +53,39 @@ pub fn service(attr: TokenStream, item: TokenStream) -> TokenStream {
     };
 
     TokenStream::from(expanded)
+}
+
+#[proc_macro_derive(ComponentBase, attributes(root))]
+pub fn special_getter(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let struct_name = &input.ident;
+    let mut getter = None;
+
+    if let Data::Struct(data_struct) = input.data {
+        if let Fields::Named(named_fields) = data_struct.fields {
+            for field in named_fields.named.iter() {
+                for attr in &field.attrs {
+                    if attr.path().is_ident("root") {
+                        let field_name = &field.ident;
+                        let field_type = &field.ty;
+
+                        getter = Some(quote! {
+                            impl ComponentBase for #struct_name {
+                                type Root = #field_type;
+
+                                fn root(&self) -> Self::Root {
+                                    self.#field_name.clone()
+                                }
+
+                                fn as_widget_ref(&self) -> &gtk::Widget {
+                                    &self.#field_name
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+    getter.unwrap_or_else(|| quote! {}).into()
 }
