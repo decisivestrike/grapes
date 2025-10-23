@@ -23,7 +23,11 @@ impl Component for Clock {
         let time = state("0".to_string());
         let label = Label::reactive(&time);
 
-        Self { time, label }
+        let clock = Self { time, label };
+
+        clock.connect_service::<TimeService>();
+
+        clock
     }
 
     fn update(&self, message: Self::Message) {
@@ -47,7 +51,7 @@ async fn time_service(tx: Sender<String>) {
 fn simple_component() -> impl IsA<Widget> {
     let count = state(0);
     let button = Button::reactive(&count);
-    let clock = Clock::default();
+    let clock = Clock::new(());
 
     button.connect_clicked(move |_| count.update(|v| *v += 1));
 
