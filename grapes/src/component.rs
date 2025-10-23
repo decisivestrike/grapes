@@ -1,18 +1,11 @@
 use std::{fmt, hash};
 
 use crate::Service;
-use gtk::{
-    Widget,
-    glib::{self, clone, object::IsA},
-};
+use gtk::glib::{self, clone};
 
 pub trait GtkCompatible:
     Clone + fmt::Debug + Default + hash::Hash + PartialEq + PartialOrd + Eq + Ord + 'static
 {
-    type Root: IsA<Widget>;
-
-    fn root(&self) -> Self::Root;
-
     fn as_widget_ref(&self) -> &gtk::Widget;
 }
 

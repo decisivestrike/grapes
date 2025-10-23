@@ -13,3 +13,5 @@ pub use grapes_macros::*;
 
 pub use gtk;
 pub use gtk::glib;
+
+pub use tokio;
