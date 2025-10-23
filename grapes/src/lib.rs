@@ -15,3 +15,8 @@ pub use gtk;
 pub use gtk::glib;
 
 pub use tokio;
+
+use std::sync::LazyLock;
+use tokio::runtime::Runtime;
+
+pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());

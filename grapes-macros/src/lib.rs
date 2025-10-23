@@ -37,16 +37,16 @@ pub fn service(attr: TokenStream, item: TokenStream) -> TokenStream {
     let expanded = quote! {
         #initial_fn
 
-        pub static #const_name: std::sync::LazyLock<tokio::sync::broadcast::Sender<#t>> = std::sync::LazyLock::new(|| {
-            let (tx, _) = broadcast::channel(64);
-            RT.spawn(#fn_name(tx.clone()));
+        pub static #const_name: std::sync::LazyLock<::grapes::tokio::sync::broadcast::Sender<#t>> = std::sync::LazyLock::new(|| {
+            let (tx, _) = ::grapes::tokio::sync::broadcast::channel(64);
+            ::grapes::RT.spawn(#fn_name(tx.clone()));
             tx
         });
 
         pub struct #struct_name;
 
-        impl Service<#t> for #struct_name {
-            fn subscribe() -> tokio::sync::broadcast::Receiver<#t> {
+        impl ::grapes::Service<#t> for #struct_name {
+            fn subscribe() -> ::grapes::tokio::sync::broadcast::Receiver<#t> {
                 #const_name.subscribe()
             }
         }

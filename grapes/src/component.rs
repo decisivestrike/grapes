@@ -11,6 +11,9 @@ pub trait GtkCompatible:
 
 pub trait Component: GtkCompatible {
     type Message: Clone + 'static;
+    type Props;
+
+    fn new(props: Self::Props) -> Self;
 
     fn update(&self, message: Self::Message);
 
