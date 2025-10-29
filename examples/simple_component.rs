@@ -1,14 +1,19 @@
-use std::time::Duration;
-
 use grapes::{
     Component, GtkCompatible, State,
-    gtk::{self, Button, Label, Orientation, Widget, prelude::*},
+    extensions::GrapesBoxExt,
+    glib::object::IsA,
+    gtk::{
+        self, Button, Label, Orientation, Widget,
+        gio::prelude::{ApplicationExt, ApplicationExtManual},
+        prelude::{ButtonExt, GtkWindowExt},
+    },
     reactivity::Reactive,
     service, state,
     tokio::sync::broadcast::Sender,
 };
+use std::time::Duration;
 
-#[derive(GtkCompatible, Clone, Debug, Default, Hash, PartialEq, PartialOrd, Eq, Ord)]
+#[derive(GtkCompatible, Clone)]
 struct Clock {
     time: State<String>,
     #[root]
@@ -57,8 +62,8 @@ fn simple_component() -> impl IsA<Widget> {
 
     let vbox = gtk::Box::new(Orientation::Vertical, 3);
 
-    vbox.append(&clock);
-    vbox.append(&button);
+    vbox.append_ref(clock);
+    vbox.append_ref(button);
 
     vbox
 }

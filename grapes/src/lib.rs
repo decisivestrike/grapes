@@ -1,5 +1,6 @@
 pub mod component;
 pub mod effect;
+pub mod extensions;
 pub mod reactivity;
 pub mod service;
 pub mod state;

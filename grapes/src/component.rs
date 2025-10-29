@@ -1,11 +1,7 @@
-use std::{fmt, hash};
-
 use crate::Service;
 use gtk::glib::{self, clone};
 
-pub trait GtkCompatible:
-    Clone + fmt::Debug + Default + hash::Hash + PartialEq + PartialOrd + Eq + Ord + 'static
-{
+pub trait GtkCompatible: AsRef<gtk::Widget> + Clone + 'static {
     fn as_widget_ref(&self) -> &gtk::Widget;
 }
 
