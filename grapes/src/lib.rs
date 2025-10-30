@@ -14,7 +14,7 @@ pub use grapes_macros::*;
 
 pub use gtk;
 pub use gtk::glib;
-
+pub use layer_shell;
 pub use tokio;
 
 use std::sync::LazyLock;
