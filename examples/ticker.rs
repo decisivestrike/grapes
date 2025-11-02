@@ -45,7 +45,7 @@ service!(TimeService -> String, async |tx| {
     }
 });
 
-fn simple_component() -> impl IsA<Widget> {
+fn ticker() -> impl IsA<Widget> {
     let clock = Ticker::new(());
 
     let vbox = gtk::Box::new(Orientation::Vertical, 0);
@@ -55,7 +55,7 @@ fn simple_component() -> impl IsA<Widget> {
 
 fn main() {
     let application = gtk::Application::builder()
-        .application_id("grapes.simple_component")
+        .application_id("grapes.ticker")
         .build();
 
     application.connect_activate(create_window);
@@ -65,12 +65,12 @@ fn main() {
 fn create_window(application: &gtk::Application) {
     let window = gtk::ApplicationWindow::builder()
         .application(application)
-        .title("Simple Component")
+        .title("Ticker")
         .default_width(350)
         .default_height(270)
         .build();
 
-    let widget = simple_component();
+    let widget = ticker();
 
     window.set_child(Some(&widget));
     window.present();
