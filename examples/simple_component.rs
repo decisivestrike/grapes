@@ -1,68 +1,55 @@
 use grapes::{
-    Component, GtkCompatible, State,
+    Component, GtkCompatible,
     extensions::GrapesBoxExt,
     glib::object::IsA,
     gtk::{
-        self, Button, Label, Orientation, Widget,
+        self, Label, Orientation, Widget,
         gio::prelude::{ApplicationExt, ApplicationExtManual},
-        prelude::{ButtonExt, GtkWindowExt},
+        prelude::GtkWindowExt,
     },
-    reactivity::Reactive,
-    service, state,
+    service,
 };
 use std::time::Duration;
 
 #[derive(GtkCompatible, Clone)]
-struct Clock {
-    time: State<String>,
+struct Ticker {
     #[root]
     label: Label,
 }
 
-impl Component for Clock {
+impl Component for Ticker {
     type Message = String;
     type Props = ();
 
-    fn new(_: Self::Props) -> Self {
-        let time = state("0".to_string());
-        let label = Label::reactive(&time);
-
-        let clock = Self { time, label };
-
+    fn new(_: ()) -> Self {
+        let label = gtk::Label::new(None);
+        let clock = Self { label };
         clock.connect_service::<TimeService>();
-
         clock
     }
 
-    fn update(&self, message: Self::Message) {
-        self.time.set(message);
+    fn update(&self, time: String) {
+        self.label.set_label(&time);
     }
 }
 
 service!(TimeService -> String, async |tx| {
-    let mut time = 1;
+    let mut count = 1;
 
     loop {
-        tx.send(time.to_string()).unwrap();
+        tx.send(count.to_string()).unwrap();
 
-        time += 1;
+        count += 1;
 
         grapes::tokio::time::sleep(Duration::from_secs(1)).await;
     }
 });
 
 fn simple_component() -> impl IsA<Widget> {
-    let count = state(0);
-    let button = Button::reactive(&count);
-    let clock = Clock::new(());
+    let clock = Ticker::new(());
 
-    button.connect_clicked(move |_| count.update(|v| *v += 1));
-
-    let vbox = gtk::Box::new(Orientation::Vertical, 3);
-
+    let vbox = gtk::Box::new(Orientation::Vertical, 0);
     vbox.append_ref(clock);
-    vbox.append_ref(button);
-
     vbox
 }
 
