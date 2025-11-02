@@ -16,5 +16,5 @@ name = "double"
 path = "double.rs"
 
 [[example]]
-name = "simple_component"
-path = "simple_component.rs"
+name = "ticker"
+path = "ticker.rs"
