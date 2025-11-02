@@ -76,8 +76,8 @@ pub fn special_getter(input: TokenStream) -> TokenStream {
                                 }
                             }
 
-                            impl AsRef<Widget> for #struct_name {
-                                fn as_ref(&self) -> &Widget {
+                            impl AsRef<::grapes::gtk::Widget> for #struct_name {
+                                fn as_ref(&self) -> &::grapes::gtk::Widget {
                                     self.as_widget_ref()
                                 }
                             }
