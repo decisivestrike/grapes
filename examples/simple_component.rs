@@ -9,7 +9,6 @@ use grapes::{
     },
     reactivity::Reactive,
     service, state,
-    tokio::sync::broadcast::Sender,
 };
 use std::time::Duration;
 
@@ -40,8 +39,7 @@ impl Component for Clock {
     }
 }
 
-#[service(TimeService)]
-async fn time_service(tx: Sender<String>) {
+service!(TimeService -> String, async |tx| {
     let mut time = 1;
 
     loop {
@@ -51,7 +49,7 @@ async fn time_service(tx: Sender<String>) {
 
         grapes::tokio::time::sleep(Duration::from_secs(1)).await;
     }
-}
+});
 
 fn simple_component() -> impl IsA<Widget> {
     let count = state(0);
