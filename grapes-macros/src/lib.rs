@@ -52,6 +52,7 @@ pub fn service(input: TokenStream) -> TokenStream {
         ),
         struct_name.span(),
     );
+
     let const_name = Ident::new(
         &format!("__{}__", struct_name.to_string().to_uppercase()),
         struct_name.span(),
@@ -85,37 +86,37 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
     let struct_name = &input.ident;
     let mut maybe_ts = None;
 
-    if let Data::Struct(data_struct) = input.data {
-        if let Fields::Named(named_fields) = data_struct.fields {
-            for field in named_fields.named.iter() {
-                for attr in &field.attrs {
-                    if attr.path().is_ident("root") {
-                        let field_name = &field.ident;
+    if let Data::Struct(data_struct) = input.data
+        && let Fields::Named(named_fields) = data_struct.fields
+    {
+        for field in named_fields.named.iter() {
+            for attr in &field.attrs {
+                if attr.path().is_ident("root") {
+                    let field_name = &field.ident;
 
-                        if maybe_ts.is_some() {
-                            return syn::Error::new_spanned(
-                                struct_name,
-                                "Only one field can have the `#[root]` attribute.",
-                            )
-                            .to_compile_error()
-                            .into();
+                    if maybe_ts.is_some() {
+                        return syn::Error::new_spanned(
+                            struct_name,
+                            "Only one field can have the #[root] attribute.",
+                        )
+                        .to_compile_error()
+                        .into();
+                    }
+
+                    maybe_ts = Some(quote! {
+                        impl GtkCompatible for #struct_name {
+                            fn as_widget_ref(&self) -> &::grapes::gtk::Widget {
+                                use ::grapes::gtk::prelude::Cast;
+                                self.#field_name.upcast_ref()
+                            }
                         }
 
-                        maybe_ts = Some(quote! {
-                            impl GtkCompatible for #struct_name {
-                                fn as_widget_ref(&self) -> &::grapes::gtk::Widget {
-                                    use ::grapes::gtk::prelude::Cast;
-                                    self.#field_name.upcast_ref()
-                                }
+                        impl AsRef<::grapes::gtk::Widget> for #struct_name {
+                            fn as_ref(&self) -> &::grapes::gtk::Widget {
+                                self.as_widget_ref()
                             }
-
-                            impl AsRef<::grapes::gtk::Widget> for #struct_name {
-                                fn as_ref(&self) -> &::grapes::gtk::Widget {
-                                    self.as_widget_ref()
-                                }
-                            }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         }
@@ -125,7 +126,7 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
         Some(ts) => ts.into(),
         None => syn::Error::new_spanned(
             struct_name,
-            "One of the fields must have the `#[root]` attribute.",
+            "One of the fields must have the #[root] attribute.",
         )
         .to_compile_error()
         .into(),
