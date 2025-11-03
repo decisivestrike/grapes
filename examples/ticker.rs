@@ -24,7 +24,7 @@ impl Component for Ticker {
     fn new(_: ()) -> Self {
         let label = gtk::Label::new(None);
         let clock = Self { label };
-        clock.connect_service::<TimeService>();
+        clock.connect_service::<TickService>();
         clock
     }
 
@@ -33,7 +33,7 @@ impl Component for Ticker {
     }
 }
 
-service!(TimeService -> String, async |tx| {
+service!(TickService -> String, async |tx| {
     let mut count = 1;
 
     loop {
