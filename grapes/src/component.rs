@@ -1,5 +1,8 @@
 use crate::Service;
-use gtk::glib::{self, clone};
+use gtk::{
+    Application, gdk,
+    glib::{self, clone},
+};
 
 pub trait GtkCompatible: AsRef<gtk::Widget> + Clone + 'static {
     fn as_widget_ref(&self) -> &gtk::Widget;
@@ -31,4 +34,12 @@ pub trait Component: GtkCompatible {
             }
         ));
     }
+}
+
+pub trait WindowComponent {
+    type Props;
+
+    fn new(application: &Application, monitor: &gdk::Monitor, props: Self::Props) -> Self;
+
+    fn present(&self);
 }
