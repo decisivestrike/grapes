@@ -18,6 +18,10 @@ pub trait Component: GtkCompatible {
 
     fn update(&self, message: Self::Message);
 
+    fn name(&self) -> &str {
+        Self::NAME
+    }
+
     fn connect_service<T>(&self)
     where
         T: Service<Self::Message>,
