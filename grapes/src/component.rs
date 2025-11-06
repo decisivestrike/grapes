@@ -9,6 +9,8 @@ pub trait GtkCompatible: AsRef<gtk::Widget> + Clone + 'static {
 }
 
 pub trait Component: GtkCompatible {
+    const NAME: &str;
+
     type Message: Clone + 'static;
     type Props;
 

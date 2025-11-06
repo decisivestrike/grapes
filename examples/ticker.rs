@@ -18,6 +18,8 @@ struct Ticker {
 }
 
 impl Component for Ticker {
+    const NAME: &str = "ticker";
+
     type Message = String;
     type Props = ();
 
