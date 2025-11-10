@@ -56,37 +56,11 @@ impl<T> StateInner<T> {
         }
     }
 }
-// Hash, PartialEq, PartialOrd, Eq, Ord
+
 /// Reactive state with counter clone semantic
 #[derive(Default)]
 pub struct State<T> {
     inner: Rc<StateInner<T>>,
-}
-
-impl<T: 'static> PartialEq for State<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.inner.as_ptr() == other.inner.as_ptr()
-    }
-}
-
-impl<T: 'static> PartialOrd for State<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.inner.as_ptr().partial_cmp(&other.inner.as_ptr())
-    }
-}
-
-impl<T: 'static> hash::Hash for State<T> {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        self.inner.as_ptr().hash(state);
-    }
-}
-
-impl<T: 'static> Eq for State<T> {}
-
-impl<T: 'static> Ord for State<T> {
-    fn cmp(&self, _other: &Self) -> std::cmp::Ordering {
-        unimplemented!()
-    }
 }
 
 impl<T> State<T> {
