@@ -2,7 +2,7 @@ use gtk::CssProvider;
 use std::path::Path;
 
 #[repr(u16)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StylePriority {
     Fallback = 1,
     Theme = 200,
