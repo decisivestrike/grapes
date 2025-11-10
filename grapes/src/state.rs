@@ -1,9 +1,8 @@
 use core::fmt;
-use gtk::glib::{clone, subclass::shared::RefCounted};
+use gtk::glib::clone;
 use std::{
     cell::{Ref, RefCell},
     fmt::{Debug, Display},
-    hash,
     ops::{Add, Div, Mul, Sub},
     rc::Rc,
 };
