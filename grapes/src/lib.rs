@@ -1,19 +1,31 @@
 pub mod component;
-pub mod effect;
-pub mod extensions;
-pub mod reactivity;
-pub mod service;
-pub mod state;
-
 pub use component::*;
+
+pub mod css;
+pub use css::Css;
+
+pub mod effect;
 pub use effect::*;
+
+pub mod extensions;
+
+pub mod reactivity;
+
+pub mod service;
 pub use service::*;
+
+pub mod state;
 pub use state::*;
+
+pub mod timing;
 
 pub use grapes_macros::*;
 
 pub use gtk;
+pub use gtk::cairo;
+pub use gtk::gio;
 pub use gtk::glib;
+pub use gtk::pango;
 pub use layer_shell;
 pub use tokio;
 
