@@ -25,8 +25,11 @@ impl Css {
     }
 
     pub fn apply(&self, priority: StylePriority) {
+        let display = gtk::gdk::Display::default()
+            .expect("Could not connect to a display.");
+
         gtk::style_context_add_provider_for_display(
-            &gtk::gdk::Display::default().expect("Could not connect to a display."),
+            &display,
             &self.provider,
             priority as u32,
         );

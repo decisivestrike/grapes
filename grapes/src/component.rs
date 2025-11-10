@@ -1,6 +1,7 @@
 use crate::Service;
 use gtk::{
-    Application, gdk,
+    Application,
+    gdk::Monitor,
     glib::{self, clone},
 };
 
@@ -45,7 +46,7 @@ pub trait Component: GtkCompatible {
 pub trait WindowComponent {
     type Props;
 
-    fn new(application: &Application, monitor: &gdk::Monitor, props: Self::Props) -> Self;
+    fn new(app: &Application, monitor: &Monitor, props: Self::Props) -> Self;
 
     fn present(&self);
 }
