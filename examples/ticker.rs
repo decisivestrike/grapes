@@ -8,6 +8,7 @@ use grapes::{
         prelude::GtkWindowExt,
     },
     service,
+    tokio::time::sleep,
 };
 use std::time::Duration;
 
@@ -20,30 +21,28 @@ struct Ticker {
 impl Component for Ticker {
     const NAME: &str = "ticker";
 
-    type Message = String;
+    type Message = i32;
     type Props = ();
 
     fn new(_: ()) -> Self {
         let label = gtk::Label::new(None);
-        let clock = Self { label };
-        clock.connect_service::<TickService>();
-        clock
+        let ticker = Self { label };
+        ticker.connect_service::<TickService>();
+        ticker
     }
 
-    fn update(&self, time: String) {
-        self.label.set_label(&time);
+    fn update(&self, time: i32) {
+        self.label.set_label(&time.to_string());
     }
 }
 
-service!(TickService -> String, async |tx| {
+service!(TickService -> i32, async |tx| {
     let mut count = 1;
 
     loop {
-        tx.send(count.to_string()).unwrap();
-
+        tx.send(count).unwrap();
         count += 1;
-
-        grapes::tokio::time::sleep(Duration::from_secs(1)).await;
+        sleep(Duration::from_secs(1)).await;
     }
 });
 
