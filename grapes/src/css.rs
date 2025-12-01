@@ -24,6 +24,13 @@ impl Css {
         Self { provider }
     }
 
+    pub fn from_str(raw: &str) -> Self {
+        let provider = gtk::CssProvider::new();
+        provider.load_from_string(raw);
+
+        Self { provider }
+    }
+
     pub fn apply(&self, priority: StylePriority) {
         let display = gtk::gdk::Display::default()
             .expect("Could not connect to a display.");
