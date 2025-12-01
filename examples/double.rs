@@ -14,14 +14,14 @@ fn double() -> impl IsA<Widget> {
         move || *count.get() * 2
     ));
 
-    let button = Button::reactive(&doubled);
+    let button = Button::statefull(&doubled);
     button.connect_clicked(clone!(
         #[strong]
         count,
         move |_| count.update(|v| *v += 1)
     ));
 
-    let label = Label::with_effect(move || format!("{count} doubled is {doubled}"));
+    let label = Label::derived(move || format!("{count} doubled is {doubled}"));
 
     let container = gtk::Box::new(gtk::Orientation::Vertical, 4);
 
