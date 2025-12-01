@@ -17,6 +17,21 @@ fn counter() -> impl IsA<gtk::Widget> {
 }
 ```
 
+Convenient work with background tasks:
+
+```rust
+// Create service
+service!(TickService -> i32, async |tx| {
+    let mut count = 1;
+
+    loop {
+        tx.send(count).unwrap();
+        count += 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+});
+```
+
 Components
 
 ```rust
@@ -35,6 +50,8 @@ impl Component for Ticker {
     fn new(_: ()) -> Self {
         let label = gtk::Label::new(None);
         let ticker = Self { label };
+
+        // You can easily use service here
         ticker.connect_service::<TickService>();
         ticker
     }
@@ -43,22 +60,4 @@ impl Component for Ticker {
         self.label.set_label(&time.to_string());
     }
 }
-```
-
-Convenient work with background tasks:
-
-```rust
-// Create service
-service!(TickService -> i32, async |tx| {
-    let mut count = 1;
-
-    loop {
-        tx.send(count).unwrap();
-        count += 1;
-        sleep(Duration::from_secs(1)).await;
-    }
-});
-
-// And subscribe on it
-ticker.connect_service::<TickService>();
 ```
