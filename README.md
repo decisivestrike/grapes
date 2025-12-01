@@ -4,6 +4,8 @@ A wrapper over gtk4-rs
 
 **G**TK **r**e**a**ctive **p**rimitiv**es**
 
+Reactivity inspired by web frameworks:
+
 ```rust
 fn counter() -> impl IsA<gtk::Widget> {
     let count = state(0);
@@ -13,4 +15,50 @@ fn counter() -> impl IsA<gtk::Widget> {
 
     button
 }
+```
+
+Components
+
+```rust
+#[derive(GtkCompatible, Clone)]
+struct Ticker {
+    #[root]
+    label: Label,
+}
+
+impl Component for Ticker {
+    const NAME: &str = "ticker";
+
+    type Message = i32;
+    type Props = ();
+
+    fn new(_: ()) -> Self {
+        let label = gtk::Label::new(None);
+        let ticker = Self { label };
+        ticker.connect_service::<TickService>();
+        ticker
+    }
+
+    fn update(&self, time: i32) {
+        self.label.set_label(&time.to_string());
+    }
+}
+```
+
+Convenient work with background tasks:
+
+```rust
+// Create service
+service!(TickService -> i32, async |tx| {
+    let mut count = 1;
+
+    loop {
+        tx.send(count).unwrap();
+        count += 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+});
+
+// And subscribe on it
+ticker.connect_service::<TickService>();
 ```
