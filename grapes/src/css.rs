@@ -1,14 +1,30 @@
 use gtk::CssProvider;
 use std::path::Path;
 
-#[repr(u16)]
+#[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StylePriority {
-    Fallback = 1,
-    Theme = 200,
-    Settings = 400,
-    Application = 600,
-    User = 800,
+    Fallback = gtk::STYLE_PROVIDER_PRIORITY_FALLBACK,
+    Theme = gtk::STYLE_PROVIDER_PRIORITY_THEME,
+    Settings = gtk::STYLE_PROVIDER_PRIORITY_SETTINGS,
+    Application = gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    User = gtk::STYLE_PROVIDER_PRIORITY_USER,
+    Custom(u32),
+}
+
+impl From<StylePriority> for u32 {
+    fn from(priority: StylePriority) -> u32 {
+        match priority {
+            StylePriority::Fallback => gtk::STYLE_PROVIDER_PRIORITY_FALLBACK,
+            StylePriority::Theme => gtk::STYLE_PROVIDER_PRIORITY_THEME,
+            StylePriority::Settings => gtk::STYLE_PROVIDER_PRIORITY_SETTINGS,
+            StylePriority::Application => {
+                gtk::STYLE_PROVIDER_PRIORITY_APPLICATION
+            }
+            StylePriority::User => gtk::STYLE_PROVIDER_PRIORITY_USER,
+            StylePriority::Custom(v) => v,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -38,7 +54,7 @@ impl Css {
         gtk::style_context_add_provider_for_display(
             &display,
             &self.provider,
-            priority as u32,
+            priority.into(),
         );
     }
 }
