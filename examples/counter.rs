@@ -1,6 +1,6 @@
 use grapes::{
     gtk::{self, Button, prelude::*},
-    reactivity::Reactive,
+    reactive::Reactive,
     state,
 };
 

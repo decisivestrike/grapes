@@ -9,8 +9,8 @@ pub use effect::*;
 
 pub mod extensions;
 
-pub mod reactivity;
-pub use reactivity::Reactive;
+pub mod reactive;
+pub use reactive::Reactive;
 
 pub mod service;
 pub use service::*;

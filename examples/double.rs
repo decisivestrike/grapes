@@ -2,7 +2,7 @@ use grapes::{
     derived,
     glib::clone,
     gtk::{self, Button, Label, Widget, prelude::*},
-    reactivity::Reactive,
+    reactive::Reactive,
     state,
 };
 
