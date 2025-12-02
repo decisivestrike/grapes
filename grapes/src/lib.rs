@@ -18,6 +18,7 @@ pub mod state;
 pub use state::*;
 
 pub mod timing;
+pub mod updateable;
 
 pub use grapes_macros::*;
 

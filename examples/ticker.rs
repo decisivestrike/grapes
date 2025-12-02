@@ -1,5 +1,5 @@
 use grapes::{
-    Component, GtkCompatible,
+    Component, Connectable, GtkCompatible, State,
     extensions::GrapesBoxExt,
     glib::object::IsA,
     gtk::{
@@ -7,8 +7,10 @@ use grapes::{
         gio::prelude::{ApplicationExt, ApplicationExtManual},
         prelude::GtkWindowExt,
     },
-    service,
+    reactivity::Reactive,
+    service, state,
     tokio::time::sleep,
+    updateable::Updateable,
 };
 use std::time::Duration;
 
@@ -16,23 +18,30 @@ use std::time::Duration;
 struct Ticker {
     #[root]
     label: Label,
+    // TODO: add #[state] attr for auto impl updateable
+    count: State<i32>,
+}
+
+impl Updateable for Ticker {
+    type Message = i32;
+
+    fn update(&self, time: i32) {
+        self.count.set(time);
+    }
 }
 
 impl Component for Ticker {
     const NAME: &str = "ticker";
 
-    type Message = i32;
     type Props = ();
 
     fn new(_: ()) -> Self {
-        let label = gtk::Label::new(None);
-        let ticker = Self { label };
+        let count = state(0);
+        let label = Label::statefull(&count);
+        let ticker = Self { label, count };
+
         ticker.connect_service::<TickService>();
         ticker
-    }
-
-    fn update(&self, time: i32) {
-        self.label.set_label(&time.to_string());
     }
 }
 
