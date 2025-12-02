@@ -9,7 +9,6 @@ use grapes::{
     },
     service, state,
     tokio::time::sleep,
-    updateable::Updateable,
 };
 use std::time::Duration;
 
@@ -17,16 +16,8 @@ use std::time::Duration;
 struct Ticker {
     #[root]
     label: Label,
-    // TODO: add #[state] attr for auto impl updateable
+    #[state]
     count: State<i32>,
-}
-
-impl Updateable for Ticker {
-    type Message = i32;
-
-    fn update(&self, time: i32) {
-        self.count.set(time);
-    }
 }
 
 impl Component for Ticker {

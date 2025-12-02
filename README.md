@@ -38,7 +38,7 @@ Components created to reduce the amount of boilerplate code:
 struct Ticker {
     #[root]
     label: Label,
-    #[state] // Not implemented yet
+    #[state]
     count: State<i32>,
 }
 

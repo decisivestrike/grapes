@@ -1,7 +1,9 @@
 use proc_macro::TokenStream;
+use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
-    Data, DeriveInput, Expr, Fields, Ident, Token, Type,
+    Data, DeriveInput, Expr, Fields, GenericArgument, Ident, PathArguments,
+    Token, Type,
     parse::{Parse, ParseStream},
     parse_macro_input,
     token::Comma,
@@ -80,11 +82,25 @@ pub fn service(input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-#[proc_macro_derive(GtkCompatible, attributes(root))]
+fn extract_inner_type(ty: &Type) -> Option<&Type> {
+    if let Type::Path(type_path) = ty {
+        let segment = type_path.path.segments.last()?;
+
+        if let PathArguments::AngleBracketed(ref args) = segment.arguments
+            && let Some(GenericArgument::Type(inner_ty)) = args.args.first()
+        {
+            return Some(inner_ty);
+        }
+    }
+
+    None
+}
+
+#[proc_macro_derive(GtkCompatible, attributes(root, state))]
 pub fn gtk_compatible(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
-    let mut maybe_ts = None;
+    let mut maybe_ts: Option<TokenStream2> = None;
 
     if let Data::Struct(data_struct) = input.data
         && let Fields::Named(named_fields) = data_struct.fields
@@ -103,7 +119,7 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                         .into();
                     }
 
-                    maybe_ts = Some(quote! {
+                    let expanded = quote! {
                         impl GtkCompatible for #struct_name {
                             fn as_widget_ref(&self) -> &::grapes::gtk::Widget {
                                 use ::grapes::gtk::prelude::Cast;
@@ -116,7 +132,46 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                                 self.as_widget_ref()
                             }
                         }
-                    });
+                    };
+
+                    if let Some(ref mut ts) = maybe_ts {
+                        ts.extend(expanded);
+                    } else {
+                        maybe_ts = Some(expanded);
+                    }
+                }
+
+                if attr.path().is_ident("state") {
+                    let field_name = &field.ident;
+                    let field_type = &field.ty;
+
+                    let generic_type = match extract_inner_type(field_type) {
+                        Some(t) => t,
+                        None => {
+                            return syn::Error::new_spanned(
+                                struct_name,
+                                "Type error",
+                            )
+                            .to_compile_error()
+                            .into();
+                        }
+                    };
+
+                    let expanded = quote! {
+                        impl ::grapes::Updateable for #struct_name {
+                            type Message = #generic_type;
+
+                            fn update(&self, value: #generic_type) {
+                                self.#field_name.set(value);
+                            }
+                        }
+                    };
+
+                    if let Some(ref mut ts) = maybe_ts {
+                        ts.extend(expanded);
+                    } else {
+                        maybe_ts = Some(expanded);
+                    }
                 }
             }
         }
