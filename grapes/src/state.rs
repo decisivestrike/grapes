@@ -49,7 +49,7 @@ impl<T> StateInner<T> {
         }
     }
 
-    fn handle_active_effect(&self) {
+    fn add_active_effect(&self) {
         if let Some(effect) = Effect::active() {
             self.effects.borrow_mut().push(effect);
         }
@@ -70,7 +70,7 @@ impl<T> State<T> {
     }
 
     pub fn get(&self) -> Ref<'_, T> {
-        self.inner.handle_active_effect();
+        self.inner.add_active_effect();
         self.get_untracked()
     }
 
@@ -89,7 +89,7 @@ impl<T> State<T> {
     {
         updater(&mut self.inner.value.borrow_mut());
 
-        self.inner.handle_active_effect();
+        self.inner.add_active_effect();
         self.inner.run_effects();
     }
 }
