@@ -33,16 +33,15 @@ impl Updateable for Ticker {
 
 impl Component for Ticker {
     const NAME: &str = "ticker";
-
     type Props = ();
 
     fn new(_: ()) -> Self {
         let count = state(0);
-        let label = Label::statefull(&count);
-        let ticker = Self { label, count };
+        count.connect_service::<TickService>();
 
-        ticker.connect_service::<TickService>();
-        ticker
+        let label = Label::statefull(&count);
+
+        Self { label, count }
     }
 }
 

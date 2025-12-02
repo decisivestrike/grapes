@@ -17,10 +17,9 @@ fn counter() -> impl IsA<gtk::Widget> {
 }
 ```
 
-Convenient work with background tasks:
+Create background tasks and subscribe on them:
 
 ```rust
-// Create service
 service!(TickService -> i32, async |tx| {
     let mut count = 1;
 
@@ -32,32 +31,30 @@ service!(TickService -> i32, async |tx| {
 });
 ```
 
-Components
+Components created to reduce the amount of boilerplate code:
 
 ```rust
 #[derive(GtkCompatible, Clone)]
 struct Ticker {
     #[root]
     label: Label,
+    #[state] // Not implemented yet
+    count: State<i32>,
 }
 
 impl Component for Ticker {
     const NAME: &str = "ticker";
-
-    type Message = i32;
     type Props = ();
 
     fn new(_: ()) -> Self {
-        let label = gtk::Label::new(None);
-        let ticker = Self { label };
+        let count = state(0);
 
         // You can easily use service here
-        ticker.connect_service::<TickService>();
-        ticker
-    }
+        count.connect_service::<TickService>();
 
-    fn update(&self, time: i32) {
-        self.label.set_label(&time.to_string());
+        let label = Label::statefull(&count);
+
+        Self { label, count }
     }
 }
 ```
