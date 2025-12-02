@@ -1,6 +1,5 @@
 use grapes::{
-    Component, GtkCompatible, State,
-    connectable::Connectable,
+    Component, Connectable, GtkCompatible, Reactive, State,
     extensions::GrapesBoxExt,
     glib::object::IsA,
     gtk::{
@@ -8,7 +7,6 @@ use grapes::{
         gio::prelude::{ApplicationExt, ApplicationExtManual},
         prelude::GtkWindowExt,
     },
-    reactivity::Reactive,
     service, state,
     tokio::time::sleep,
     updateable::Updateable,

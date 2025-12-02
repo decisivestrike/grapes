@@ -10,6 +10,7 @@ pub use effect::*;
 pub mod extensions;
 
 pub mod reactivity;
+pub use reactivity::Reactive;
 
 pub mod service;
 pub use service::*;
@@ -18,8 +19,12 @@ pub mod state;
 pub use state::*;
 
 pub mod connectable;
+pub use connectable::Connectable;
+
 pub mod timing;
+
 pub mod updateable;
+pub use updateable::Updateable;
 
 pub use grapes_macros::*;
 
