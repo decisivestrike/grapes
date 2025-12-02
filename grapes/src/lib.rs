@@ -17,6 +17,7 @@ pub use service::*;
 pub mod state;
 pub use state::*;
 
+pub mod connectable;
 pub mod timing;
 pub mod updateable;
 

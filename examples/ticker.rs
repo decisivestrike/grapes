@@ -1,5 +1,6 @@
 use grapes::{
-    Component, Connectable, GtkCompatible, State,
+    Component, GtkCompatible, State,
+    connectable::Connectable,
     extensions::GrapesBoxExt,
     glib::object::IsA,
     gtk::{
