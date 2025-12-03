@@ -4,9 +4,6 @@ thread_local! {
     static ACTIVE_EFFECT: RefCell<Option<Effect>> = RefCell::new(None);
 }
 
-#[derive(Clone)]
-pub struct Effect(Rc<dyn Fn() + 'static>);
-
 /// Register effect
 pub fn effect<E>(e: E)
 where
@@ -17,6 +14,9 @@ where
     effect.call();
     Effect::set_active(None);
 }
+
+#[derive(Clone)]
+pub struct Effect(Rc<dyn Fn() + 'static>);
 
 impl Effect {
     fn new<F>(f: F) -> Self
