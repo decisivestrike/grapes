@@ -7,10 +7,11 @@ pub trait Connectable: Updateable {
     where
         S: Service<Message = Self::Message>;
 
-    fn connect_service_unmatched<S, F>(&self, matcher: F)
-    where
-        S: Service,
-        F: Fn(S::Message) -> Self::Message + 'static;
+    fn connect_service_unmatched<S>(
+        &self,
+        matcher: impl Fn(S::Message) -> Self::Message + 'static,
+    ) where
+        S: Service;
 }
 
 impl<C> Connectable for C
@@ -36,10 +37,11 @@ where
         ));
     }
 
-    fn connect_service_unmatched<S, F>(&self, matcher: F)
-    where
+    fn connect_service_unmatched<S>(
+        &self,
+        matcher: impl Fn(S::Message) -> Self::Message + 'static,
+    ) where
         S: Service,
-        F: Fn(S::Message) -> Self::Message + 'static,
     {
         let mut rx = S::subscribe();
 
