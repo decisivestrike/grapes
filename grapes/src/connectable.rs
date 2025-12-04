@@ -3,26 +3,25 @@ use gtk::glib::{self, clone};
 use crate::{Service, updateable::Updateable};
 
 pub trait Connectable: Updateable {
-    fn connect_service<T>(&self)
+    fn connect_service<S>(&self)
     where
-        T: Service<Self::Message>;
+        S: Service<Message = Self::Message>;
 
-    fn connect_service_unmatched<W, T, F>(&self, matcher: F)
+    fn connect_service_unmatched<S, F>(&self, matcher: F)
     where
-        W: Clone + 'static,
-        T: Service<W>,
-        F: Fn(W) -> Self::Message + 'static;
+        S: Service,
+        F: Fn(S::Message) -> Self::Message + 'static;
 }
 
 impl<C> Connectable for C
 where
     C: Updateable,
 {
-    fn connect_service<T>(&self)
+    fn connect_service<S>(&self)
     where
-        T: Service<Self::Message>,
+        S: Service<Message = Self::Message>,
     {
-        let mut rx = T::subscribe();
+        let mut rx = S::subscribe();
 
         glib::spawn_future_local(clone!(
             #[strong(rename_to=updateable)]
@@ -37,13 +36,12 @@ where
         ));
     }
 
-    fn connect_service_unmatched<W, T, F>(&self, matcher: F)
+    fn connect_service_unmatched<S, F>(&self, matcher: F)
     where
-        W: Clone + 'static,
-        T: Service<W>,
-        F: Fn(W) -> Self::Message + 'static,
+        S: Service,
+        F: Fn(S::Message) -> Self::Message + 'static,
     {
-        let mut rx = T::subscribe();
+        let mut rx = S::subscribe();
 
         glib::spawn_future_local(clone!(
             #[strong(rename_to=updateable)]

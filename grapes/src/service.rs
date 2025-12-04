@@ -1,15 +1,11 @@
 use tokio::sync::broadcast;
 
-pub trait CachedService<T>: Service<T>
-where
-    T: Clone + 'static,
-{
-    fn cache(&self) -> &T;
+pub trait CachedService: Service {
+    fn cache(&self) -> &Self::Message;
 }
 
-pub trait Service<T>
-where
-    T: Clone + 'static,
-{
-    fn subscribe() -> broadcast::Receiver<T>;
+pub trait Service {
+    type Message: Clone + 'static;
+
+    fn subscribe() -> broadcast::Receiver<Self::Message>;
 }

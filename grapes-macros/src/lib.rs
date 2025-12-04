@@ -72,7 +72,9 @@ pub fn service(input: TokenStream) -> TokenStream {
 
         pub struct #struct_name;
 
-        impl ::grapes::Service<#channel_type> for #struct_name {
+        impl ::grapes::Service for #struct_name {
+            type Message = #channel_type;
+
             fn subscribe() -> ::grapes::tokio::sync::broadcast::Receiver<#channel_type> {
                 #const_name.subscribe()
             }
