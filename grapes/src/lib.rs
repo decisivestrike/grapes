@@ -26,6 +26,8 @@ pub mod timing;
 pub mod updateable;
 pub use updateable::Updateable;
 
+pub mod prelude;
+
 pub use grapes_macros::*;
 
 pub use gtk;
