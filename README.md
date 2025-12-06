@@ -1,10 +1,19 @@
 # Grapes
 
-A wrapper over gtk4-rs
+Grapes is a library designed for convenient and reactive development with [gtk4-rs](https://github.com/gtk-rs/gtk4-rs) in Rust. Inspired by modern web frameworks, it provides primitives for reactive state management, simplifying GUI programming.
 
-**G**TK **r**e**a**ctive **p**rimitiv**es**
+With Grapes, you can easily build reactive interfaces, manage state updates automatically, and write more declarative code.
 
-Reactivity inspired by web frameworks:
+## Key Features
+
+- Reactive state and change management that automatically updates the UI.
+- Macros for background tasks (services) to simplify working with asynchronous operations.
+- Convenient components and derive macros to reduce boilerplate code.
+- GTK extensions (extension traits) for easier manipulation of common GTK widgets like `gtk::Box`.
+
+## Usage Examples
+
+Simple reactive counter:
 
 ```rust
 fn counter() -> impl IsA<gtk::Widget> {
@@ -17,7 +26,7 @@ fn counter() -> impl IsA<gtk::Widget> {
 }
 ```
 
-Create background tasks and subscribe on them:
+Background service definition with macro:
 
 ```rust
 service!(TickService -> i32, async |tx| {
@@ -31,7 +40,7 @@ service!(TickService -> i32, async |tx| {
 });
 ```
 
-Components created to reduce the amount of boilerplate code:
+Reactive component via derive macros:
 
 ```rust
 #[derive(GtkCompatible, Clone)]
@@ -58,3 +67,7 @@ impl Component for Ticker {
     }
 }
 ```
+
+## Why use Grapes?
+
+GTK is powerful but low-level. Grapes brings higher-level abstractions for reactive programming while preserving full control over the underlying api — no black magic, just convenient helpers.
