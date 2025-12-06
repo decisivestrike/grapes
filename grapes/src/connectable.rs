@@ -16,7 +16,7 @@ pub trait Connectable: Updateable {
 
 impl<C> Connectable for C
 where
-    C: Updateable,
+    C: Updateable + Clone,
 {
     fn connect_service<S>(&self)
     where

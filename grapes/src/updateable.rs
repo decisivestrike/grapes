@@ -1,6 +1,6 @@
 use crate::State;
 
-pub trait Updateable: Clone + 'static {
+pub trait Updateable: 'static {
     type Message: Clone + 'static;
 
     fn update(&self, message: Self::Message);
