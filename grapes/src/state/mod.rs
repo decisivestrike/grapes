@@ -1,15 +1,18 @@
+pub mod refcell_state;
+
+#[cfg(test)]
+use crate::Effect;
+use crate::effect::effect;
 use core::fmt;
 use gtk::glib::clone;
 use std::{
-    cell::{Ref, RefCell},
+    cell::Ref,
     fmt::{Debug, Display},
-    ops::{Add, Div, Mul, Sub},
+    ops::{Add, AddAssign, Div, Mul, Sub},
     rc::Rc,
 };
 
-use crate::effect::{Effect, effect};
-
-pub fn state<T>(initial: T) -> State<T> {
+pub fn state<T: 'static>(initial: T) -> State<T> {
     State::new(initial)
 }
 
@@ -29,42 +32,27 @@ where
     state
 }
 
-#[derive(Default)]
-struct StateInner<T> {
-    value: RefCell<T>,
-    effects: RefCell<Vec<Effect>>,
-}
+trait InnerState<T>
+where
+    T: 'static,
+{
+    fn new(value: T) -> Self
+    where
+        Self: Sized;
 
-impl<T> StateInner<T> {
-    fn new(value: T) -> Self {
-        let value = RefCell::new(value);
-        let effects = Default::default();
+    fn run_effects(&self);
 
-        Self { value, effects }
-    }
-
-    fn run_effects(&self) {
-        for effect in self.effects.borrow().iter() {
-            effect.call();
-        }
-    }
-
-    fn add_active_effect(&self) {
-        if let Some(effect) = Effect::active() {
-            self.effects.borrow_mut().push(effect);
-        }
-    }
+    fn add_active_effect(&self);
 }
 
 /// Reactive state with counter clone semantic
-#[derive(Default)]
 pub struct State<T> {
-    inner: Rc<StateInner<T>>,
+    inner: Rc<dyn InnerState<T>>,
 }
 
-impl<T> State<T> {
+impl<T: 'static> State<T> {
     pub fn new(value: T) -> Self {
-        let inner = Rc::new(StateInner::new(value));
+        let inner = Rc::new(RefCellState::new(value));
 
         Self { inner }
     }
@@ -92,6 +80,11 @@ impl<T> State<T> {
         self.inner.add_active_effect();
         self.inner.run_effects();
     }
+
+    #[cfg(test)]
+    pub fn effects(&self) -> Ref<'_, Vec<Effect>> {
+        self.inner.effects.borrow()
+    }
 }
 
 impl<T> Clone for State<T> {
@@ -102,13 +95,13 @@ impl<T> Clone for State<T> {
     }
 }
 
-impl<T: Debug> fmt::Debug for State<T> {
+impl<T: Debug + 'static> fmt::Debug for State<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.get().fmt(f)
     }
 }
 
-impl<T: Display> fmt::Display for State<T> {
+impl<T: Display + 'static> fmt::Display for State<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.get().fmt(f)
     }
@@ -116,7 +109,7 @@ impl<T: Display> fmt::Display for State<T> {
 
 impl<T> Add for &State<T>
 where
-    T: Add<Output = T> + Copy,
+    T: Add<Output = T> + Copy + 'static,
 {
     type Output = T;
 
@@ -125,9 +118,18 @@ where
     }
 }
 
+impl<T> AddAssign for &State<T>
+where
+    T: Add<Output = T> + Copy + 'static,
+{
+    fn add_assign(&mut self, rhs: Self) {
+        self.update(|s| s + rhs.get());
+    }
+}
+
 impl<T> Sub for &State<T>
 where
-    T: Sub<Output = T> + Copy,
+    T: Sub<Output = T> + Copy + 'static,
 {
     type Output = T;
 
@@ -138,7 +140,7 @@ where
 
 impl<T> Mul for &State<T>
 where
-    T: Mul<Output = T> + Copy,
+    T: Mul<Output = T> + Copy + 'static,
 {
     type Output = T;
 
@@ -149,7 +151,7 @@ where
 
 impl<T> Div for &State<T>
 where
-    T: Div<Output = T> + Copy,
+    T: Div<Output = T> + Copy + 'static,
 {
     type Output = T;
 
