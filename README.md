@@ -45,8 +45,6 @@ Reactive component via derive macros:
 struct Weather {
     #[root]
     label: Label,
-    #[state]
-    weather: State<CurrentWeather>,
 }
 
 impl Component for Weather {
@@ -58,7 +56,7 @@ impl Component for Weather {
         // You can easily use service here
         weather.connect_service::<WeatherService>();
         let label = Label::statefull(&weather);
-        Self { label, weather }
+        Self { label }
     }
 }
 ```

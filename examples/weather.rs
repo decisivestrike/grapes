@@ -1,6 +1,6 @@
 use core::fmt;
 use grapes::{
-    Component, Connectable, GtkCompatible, Reactive, State, broadcast,
+    Component, Connectable, GtkCompatible, Reactive, broadcast,
     extensions::GrapesBoxExt,
     glib::object::IsA,
     gtk::{
@@ -65,8 +65,6 @@ pub async fn get_weather() -> Result<CurrentWeather, Box<dyn std::error::Error>>
 struct Weather {
     #[root]
     label: Label,
-    #[state]
-    weather: State<CurrentWeather>,
 }
 
 impl Component for Weather {
@@ -79,7 +77,7 @@ impl Component for Weather {
 
         let label = Label::statefull(&weather);
 
-        Self { label, weather }
+        Self { label }
     }
 }
 
