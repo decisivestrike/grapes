@@ -1,64 +1,33 @@
 mod utils;
 pub(crate) use utils::*;
 
+mod inputs;
+pub(crate) use inputs::*;
+
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::{
-    Data, DeriveInput, Expr, Fields, Ident, Token, Type,
-    parse::{Parse, ParseStream},
-    parse_macro_input,
-    token::Comma,
-};
-
-struct BroadcastInput {
-    struct_name: Ident,
-    _arrow_token: Token![->],
-    channel_type: Type,
-    _comma_token: Comma,
-    _async: Token![async],
-    _bar1: Token![|],
-    tx_alias: Ident,
-    _bar2: Token![|],
-    body: Expr,
-}
-
-impl Parse for BroadcastInput {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(BroadcastInput {
-            struct_name: input.parse()?,
-            _arrow_token: input.parse()?,
-            channel_type: input.parse()?,
-            _comma_token: input.parse()?,
-            _async: input.parse()?,
-            _bar1: input.parse()?,
-            tx_alias: input.parse()?,
-            _bar2: input.parse()?,
-            body: input.parse()?,
-        })
-    }
-}
+use syn::{Data, DeriveInput, Fields, Ident, parse_macro_input};
 
 #[proc_macro]
 pub fn broadcast(input: TokenStream) -> TokenStream {
-    let BroadcastInput {
+    let PersistanceInput {
         struct_name,
         channel_type,
         tx_alias,
         body,
-        ..
-    } = parse_macro_input!(input as BroadcastInput);
+    } = parse_macro_input!(input as PersistanceInput);
 
     let fn_name = Ident::new(
         &format!(
-            "__{}_background_process__",
+            "__{}_broadcast_background_process__",
             struct_name.to_string().to_lowercase()
         ),
         struct_name.span(),
     );
 
     let const_name = Ident::new(
-        &format!("__{}__", struct_name.to_string().to_uppercase()),
+        &format!("__{}_BROADCAST__", struct_name.to_string().to_uppercase()),
         struct_name.span(),
     );
 
@@ -90,48 +59,90 @@ pub fn broadcast(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn persistent(input: TokenStream) -> TokenStream {
-    let BroadcastInput {
+    let PersistentInput {
         struct_name,
-        channel_type,
-        tx_alias,
+        storage_type,
         body,
-        ..
-    } = parse_macro_input!(input as BroadcastInput);
+        interval,
+    } = parse_macro_input!(input as PersistentInput);
 
     let fn_name = Ident::new(
         &format!(
-            "__{}_background_process__",
+            "__{}_persistent_background_process__",
             struct_name.to_string().to_lowercase()
         ),
         struct_name.span(),
     );
 
     let const_name = Ident::new(
-        &format!("__{}__", struct_name.to_string().to_uppercase()),
+        &format!("__{}_PERSISTENT__", struct_name.to_string().to_uppercase()),
+        struct_name.span(),
+    );
+
+    let cache_name = Ident::new(
+        &format!(
+            "__{}_PERSISTENT_CACHE__",
+            struct_name.to_string().to_uppercase()
+        ),
         struct_name.span(),
     );
 
     let expanded = quote! {
-        async fn #fn_name(#tx_alias: ::grapes::tokio::sync::broadcast::Sender<#channel_type>) #body
+        async fn #fn_name(tx: ::grapes::tokio::sync::broadcast::Sender<#storage_type>) {
+            loop {
+                let value = (#body)().await;
+                tx.send(value).unwrap();
+                let mut cache = #cache_name.write().await;
+                *cache = Some(value);
+                ::grapes::tokio::time::sleep(#interval).await;
+            }
+        }
 
-        pub static #const_name: std::sync::LazyLock<::grapes::tokio::sync::broadcast::Sender<#channel_type>> =
+        pub static #const_name: std::sync::LazyLock<::grapes::tokio::sync::broadcast::Sender<#storage_type>> =
             std::sync::LazyLock::new(|| {
-                let (tx, _) = ::grapes::tokio::sync::broadcast::channel::<#channel_type>(64);
+                let (tx, _) = ::grapes::tokio::sync::broadcast::channel::<#storage_type>(64);
                 ::grapes::RT.spawn(#fn_name(tx.clone()));
                 tx
             });
 
-        pub struct #struct_name {
-            cache: #channel_type,
-        }
+        static #cache_name: ::grapes::tokio::sync::RwLock<Option<#storage_type>> =
+            ::grapes::tokio::sync::RwLock::const_new(None);
+
+        pub struct #struct_name;
 
         impl ::grapes::Service for #struct_name {
-            type Message = #channel_type;
+            type Message = #storage_type;
         }
 
-        impl ::grapes::Cacheable for #struct_name {
-            fn cache(&self) -> &#channel_type {
-                &self.cache
+        impl ::grapes::Broadcast for #struct_name {
+            fn subscribe() -> ::grapes::tokio::sync::broadcast::Receiver<#storage_type> {
+                #const_name.subscribe()
+            }
+        }
+
+        impl Cacheable for #struct_name {
+            fn cache() -> ::grapes::tokio::sync::RwLockReadGuard<'static, Self::Message> {
+                let cache = #cache_name.blocking_read();
+                ::grapes::tokio::sync::RwLockReadGuard::try_map(cache, |opt| opt.as_ref()).unwrap()
+            }
+
+            fn cache_copy() -> Self::Message
+            where
+                Self::Message: Copy,
+            {
+                #cache_name.blocking_read().unwrap()
+            }
+
+            async fn cache_async() -> ::grapes::tokio::sync::RwLockReadGuard<'static, Self::Message> {
+                let cache = #cache_name.read().await;
+                ::grapes::tokio::sync::RwLockReadGuard::try_map(cache, |opt| opt.as_ref()).unwrap()
+            }
+
+            async fn cache_copy_async() -> Self::Message
+            where
+                Self::Message: Copy,
+            {
+                #cache_name.read().await.unwrap()
             }
         }
     };
@@ -139,6 +150,7 @@ pub fn persistent(input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+/// Generates code that will have to be written anyway
 #[proc_macro_derive(GtkCompatible, attributes(root, state))]
 pub fn gtk_compatible(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -178,9 +190,7 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                     };
 
                     maybe_root_ts = Some(expanded);
-                }
-
-                if attr.path().is_ident("state") {
+                } else if attr.path().is_ident("state") {
                     let field_name = &field.ident;
                     let field_type = &field.ty;
 
