@@ -1,15 +1,17 @@
+mod utils;
+pub(crate) use utils::*;
+
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
-    Data, DeriveInput, Expr, Fields, GenericArgument, Ident, PathArguments,
-    Token, Type,
+    Data, DeriveInput, Expr, Fields, Ident, Token, Type,
     parse::{Parse, ParseStream},
     parse_macro_input,
     token::Comma,
 };
 
-struct ServiceInput {
+struct BroadcastInput {
     struct_name: Ident,
     _arrow_token: Token![->],
     channel_type: Type,
@@ -21,9 +23,9 @@ struct ServiceInput {
     body: Expr,
 }
 
-impl Parse for ServiceInput {
+impl Parse for BroadcastInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(ServiceInput {
+        Ok(BroadcastInput {
             struct_name: input.parse()?,
             _arrow_token: input.parse()?,
             channel_type: input.parse()?,
@@ -38,14 +40,14 @@ impl Parse for ServiceInput {
 }
 
 #[proc_macro]
-pub fn service(input: TokenStream) -> TokenStream {
-    let ServiceInput {
+pub fn broadcast(input: TokenStream) -> TokenStream {
+    let BroadcastInput {
         struct_name,
         channel_type,
         tx_alias,
         body,
         ..
-    } = parse_macro_input!(input as ServiceInput);
+    } = parse_macro_input!(input as BroadcastInput);
 
     let fn_name = Ident::new(
         &format!(
@@ -74,7 +76,9 @@ pub fn service(input: TokenStream) -> TokenStream {
 
         impl ::grapes::Service for #struct_name {
             type Message = #channel_type;
+        }
 
+        impl ::grapes::Broadcast for #struct_name {
             fn subscribe() -> ::grapes::tokio::sync::broadcast::Receiver<#channel_type> {
                 #const_name.subscribe()
             }
@@ -84,25 +88,64 @@ pub fn service(input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-fn extract_inner_type(ty: &Type) -> Option<&Type> {
-    if let Type::Path(type_path) = ty {
-        let segment = type_path.path.segments.last()?;
+#[proc_macro]
+pub fn persistent(input: TokenStream) -> TokenStream {
+    let BroadcastInput {
+        struct_name,
+        channel_type,
+        tx_alias,
+        body,
+        ..
+    } = parse_macro_input!(input as BroadcastInput);
 
-        if let PathArguments::AngleBracketed(ref args) = segment.arguments
-            && let Some(GenericArgument::Type(inner_ty)) = args.args.first()
-        {
-            return Some(inner_ty);
+    let fn_name = Ident::new(
+        &format!(
+            "__{}_background_process__",
+            struct_name.to_string().to_lowercase()
+        ),
+        struct_name.span(),
+    );
+
+    let const_name = Ident::new(
+        &format!("__{}__", struct_name.to_string().to_uppercase()),
+        struct_name.span(),
+    );
+
+    let expanded = quote! {
+        async fn #fn_name(#tx_alias: ::grapes::tokio::sync::broadcast::Sender<#channel_type>) #body
+
+        pub static #const_name: std::sync::LazyLock<::grapes::tokio::sync::broadcast::Sender<#channel_type>> =
+            std::sync::LazyLock::new(|| {
+                let (tx, _) = ::grapes::tokio::sync::broadcast::channel::<#channel_type>(64);
+                ::grapes::RT.spawn(#fn_name(tx.clone()));
+                tx
+            });
+
+        pub struct #struct_name {
+            cache: #channel_type,
         }
-    }
 
-    None
+        impl ::grapes::Service for #struct_name {
+            type Message = #channel_type;
+        }
+
+        impl ::grapes::Cacheable for #struct_name {
+            fn cache(&self) -> &#channel_type {
+                &self.cache
+            }
+        }
+    };
+
+    TokenStream::from(expanded)
 }
 
 #[proc_macro_derive(GtkCompatible, attributes(root, state))]
 pub fn gtk_compatible(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
-    let mut maybe_ts: Option<TokenStream2> = None;
+
+    let mut maybe_root_ts: Option<TokenStream2> = None;
+    let mut maybe_state_ts: Option<TokenStream2> = None;
 
     if let Data::Struct(data_struct) = input.data
         && let Fields::Named(named_fields) = data_struct.fields
@@ -112,13 +155,11 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                 if attr.path().is_ident("root") {
                     let field_name = &field.ident;
 
-                    if maybe_ts.is_some() {
-                        return syn::Error::new_spanned(
+                    if maybe_root_ts.is_some() {
+                        return error(
                             struct_name,
                             "Only one field can have the #[root] attribute.",
-                        )
-                        .to_compile_error()
-                        .into();
+                        );
                     }
 
                     let expanded = quote! {
@@ -136,26 +177,27 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                         }
                     };
 
-                    if let Some(ref mut ts) = maybe_ts {
-                        ts.extend(expanded);
-                    } else {
-                        maybe_ts = Some(expanded);
-                    }
+                    maybe_root_ts = Some(expanded);
                 }
 
                 if attr.path().is_ident("state") {
                     let field_name = &field.ident;
                     let field_type = &field.ty;
 
-                    let generic_type = match extract_inner_type(field_type) {
+                    if let Some(_) = maybe_state_ts {
+                        return error(
+                            attr.path(),
+                            "Using the #[state] attribute twice",
+                        );
+                    }
+
+                    let generic_type = match extract_generic(field_type) {
                         Some(t) => t,
                         None => {
-                            return syn::Error::new_spanned(
+                            return error(
                                 struct_name,
-                                "Type error",
-                            )
-                            .to_compile_error()
-                            .into();
+                                "Can't extract T from State<T>",
+                            );
                         }
                     };
 
@@ -169,23 +211,23 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                         }
                     };
 
-                    if let Some(ref mut ts) = maybe_ts {
-                        ts.extend(expanded);
-                    } else {
-                        maybe_ts = Some(expanded);
-                    }
+                    maybe_state_ts = Some(expanded);
                 }
             }
         }
     }
 
-    match maybe_ts {
-        Some(ts) => ts.into(),
-        None => syn::Error::new_spanned(
+    match (maybe_root_ts, maybe_state_ts) {
+        (None, _) => error(
             struct_name,
             "One of the fields must have the #[root] attribute.",
-        )
-        .to_compile_error()
-        .into(),
+        ),
+        (Some(root_ts), None) => root_ts.into(),
+        (Some(root_ts), Some(state_ts)) => {
+            let mut ts = TokenStream2::new();
+            ts.extend(root_ts);
+            ts.extend(state_ts);
+            ts.into()
+        }
     }
 }

@@ -6,6 +6,8 @@ license = "MIT"
 
 [dev-dependencies]
 grapes = { path = "../grapes" }
+reqwest = { version = "0.12.24", features = ["json"] }
+serde = { version = "1.0.228", features = ["derive"] }
 
 [[example]]
 name = "counter"
@@ -16,5 +18,5 @@ name = "double"
 path = "double.rs"
 
 [[example]]
-name = "ticker"
-path = "ticker.rs"
+name = "weather"
+path = "weather.rs"

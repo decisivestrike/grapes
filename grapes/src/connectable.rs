@@ -1,17 +1,16 @@
+use crate::{Broadcast, updateable::Updateable};
 use gtk::glib::{self, clone};
-
-use crate::{Service, updateable::Updateable};
 
 pub trait Connectable: Updateable {
     fn connect_service<S>(&self)
     where
-        S: Service<Message = Self::Message>;
+        S: Broadcast<Message = Self::Message>;
 
     fn connect_service_unmatched<S>(
         &self,
         matcher: impl Fn(S::Message) -> Self::Message + 'static,
     ) where
-        S: Service;
+        S: Broadcast;
 }
 
 impl<C> Connectable for C
@@ -20,7 +19,7 @@ where
 {
     fn connect_service<S>(&self)
     where
-        S: Service<Message = Self::Message>,
+        S: Broadcast<Message = Self::Message>,
     {
         let mut rx = S::subscribe();
 
@@ -41,7 +40,7 @@ where
         &self,
         matcher: impl Fn(S::Message) -> Self::Message + 'static,
     ) where
-        S: Service,
+        S: Broadcast,
     {
         let mut rx = S::subscribe();
 
