@@ -29,13 +29,11 @@ fn counter() -> impl IsA<gtk::Widget> {
 Background service definition with macro:
 
 ```rust
-service!(TickService -> i32, async |tx| {
-    let mut count = 1;
-
+broadcast!(WeatherService -> CurrentWeather, async |tx| {
     loop {
-        tx.send(count).unwrap();
-        count += 1;
-        sleep(Duration::from_secs(1)).await;
+        let weather = get_weather().await.unwrap_or_default();
+        tx.send(weather).unwrap();
+        sleep(Duration::from_secs(600)).await;
     }
 });
 ```
@@ -44,26 +42,23 @@ Reactive component via derive macros:
 
 ```rust
 #[derive(GtkCompatible, Clone)]
-struct Ticker {
+struct Weather {
     #[root]
     label: Label,
     #[state]
-    count: State<i32>,
+    weather: State<CurrentWeather>,
 }
 
-impl Component for Ticker {
-    const NAME: &str = "ticker";
+impl Component for Weather {
+    const NAME: &str = "weather";
     type Props = ();
 
     fn new(_: ()) -> Self {
-        let count = state(0);
-
+        let weather = state(CurrentWeather::default());
         // You can easily use service here
-        count.connect_service::<TickService>();
-
-        let label = Label::statefull(&count);
-
-        Self { label, count }
+        weather.connect_service::<WeatherService>();
+        let label = Label::statefull(&weather);
+        Self { label, weather }
     }
 }
 ```

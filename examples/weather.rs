@@ -39,8 +39,8 @@ pub struct WeatherResponse {
     current: CurrentWeather,
 }
 
-pub async fn get_ny_weather()
--> Result<CurrentWeather, Box<dyn std::error::Error>> {
+pub async fn get_weather() -> Result<CurrentWeather, Box<dyn std::error::Error>>
+{
     let url = "https://api.open-meteo.com/v1/forecast";
 
     let client = Client::new();
@@ -66,26 +66,26 @@ struct Weather {
     #[root]
     label: Label,
     #[state]
-    count: State<CurrentWeather>,
+    weather: State<CurrentWeather>,
 }
 
 impl Component for Weather {
-    const NAME: &str = "counter";
+    const NAME: &str = "weather";
     type Props = ();
 
     fn new(_: ()) -> Self {
-        let count = state(CurrentWeather::default());
-        count.connect_service::<WeatherService>();
+        let weather = state(CurrentWeather::default());
+        weather.connect_service::<WeatherService>();
 
-        let label = Label::statefull(&count);
+        let label = Label::statefull(&weather);
 
-        Self { label, count }
+        Self { label, weather }
     }
 }
 
 broadcast!(WeatherService -> CurrentWeather, async |tx| {
     loop {
-        let weather = get_ny_weather().await.unwrap_or_default();
+        let weather = get_weather().await.unwrap_or_default();
         tx.send(weather).unwrap();
         sleep(Duration::from_secs(600)).await;
     }
