@@ -67,11 +67,8 @@ struct Weather {
     label: Label,
 }
 
-impl Component for Weather {
-    const NAME: &str = "weather";
-    type Props = ();
-
-    fn new(_: ()) -> Self {
+impl Weather {
+    fn new() -> Self {
         let weather = state(CurrentWeather::default());
         weather.connect_service::<WeatherService>();
 
@@ -79,6 +76,10 @@ impl Component for Weather {
 
         Self { label }
     }
+}
+
+impl Component for Weather {
+    const NAME: &str = "weather";
 }
 
 broadcast!(WeatherService -> CurrentWeather, async |tx| {
@@ -90,7 +91,7 @@ broadcast!(WeatherService -> CurrentWeather, async |tx| {
 });
 
 fn weather() -> impl IsA<Widget> {
-    let clock = Weather::new(());
+    let clock = Weather::new();
 
     let vbox = gtk::Box::new(Orientation::Vertical, 0);
     vbox.append_ref(clock);
