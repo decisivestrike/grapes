@@ -47,11 +47,8 @@ struct Weather {
     label: Label,
 }
 
-impl Component for Weather {
-    const NAME: &str = "weather";
-    type Props = ();
-
-    fn new(_: ()) -> Self {
+impl Weather {
+    fn new() -> Self {
         let weather = state(CurrentWeather::default());
         // You can easily use service here
         weather.connect_service::<WeatherService>();
