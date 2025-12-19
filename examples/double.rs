@@ -11,7 +11,7 @@ fn double() -> impl IsA<Widget> {
     let doubled = derived(clone!(
         #[strong]
         count,
-        move || *count.get() * 2
+        move || count.get() * 2
     ));
 
     let button = Button::statefull(&doubled);

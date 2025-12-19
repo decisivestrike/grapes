@@ -1,9 +1,8 @@
 use core::fmt;
-use gtk::glib::clone;
+use gtk::glib::{self, clone};
 use std::{
     cell::{RefCell, UnsafeCell},
     fmt::{Debug, Display},
-    ops::{Add, Deref, Div, Mul, Sub},
     rc::Rc,
 };
 
@@ -59,7 +58,7 @@ impl<T> StateInner<T> {
 }
 
 /// Reactive state with counter clone semantic
-#[derive(Default)]
+#[derive(Default, glib::Downgrade)]
 pub struct State<T> {
     inner: Rc<StateInner<T>>,
 }
@@ -117,57 +116,5 @@ impl<T: Debug> fmt::Debug for State<T> {
 impl<T: Display> fmt::Display for State<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.get().fmt(f)
-    }
-}
-
-impl<T> Deref for State<T> {
-    type Target = T;
-    fn deref(&self) -> &Self::Target {
-        self.get()
-    }
-}
-
-// OPERATORS OVERLOADINGS
-impl<T> Add for &State<T>
-where
-    T: Add<Output = T> + Copy,
-{
-    type Output = T;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        *self.get() + *rhs.get()
-    }
-}
-
-impl<T> Sub for &State<T>
-where
-    T: Sub<Output = T> + Copy,
-{
-    type Output = T;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        *self.get() - *rhs.get()
-    }
-}
-
-impl<T> Mul for &State<T>
-where
-    T: Mul<Output = T> + Copy,
-{
-    type Output = T;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        *self.get() * *rhs.get()
-    }
-}
-
-impl<T> Div for &State<T>
-where
-    T: Div<Output = T> + Copy,
-{
-    type Output = T;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        *self.get() / *rhs.get()
     }
 }
