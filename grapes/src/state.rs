@@ -1,9 +1,9 @@
 use core::fmt;
 use gtk::glib::clone;
 use std::{
-    cell::{Ref, RefCell},
+    cell::{RefCell, UnsafeCell},
     fmt::{Debug, Display},
-    ops::{Add, Div, Mul, Sub},
+    ops::{Add, Deref, Div, Mul, Sub},
     rc::Rc,
 };
 
@@ -29,15 +29,17 @@ where
     state
 }
 
+// background
+
 #[derive(Default)]
 struct StateInner<T> {
-    value: RefCell<T>,
+    value: UnsafeCell<T>,
     effects: RefCell<Vec<Effect>>,
 }
 
 impl<T> StateInner<T> {
     fn new(value: T) -> Self {
-        let value = RefCell::new(value);
+        let value = UnsafeCell::new(value);
         let effects = Default::default();
 
         Self { value, effects }
@@ -69,17 +71,19 @@ impl<T> State<T> {
         Self { inner }
     }
 
-    pub fn get(&self) -> Ref<'_, T> {
+    pub fn get(&self) -> &T {
         self.inner.add_active_effect();
         self.get_untracked()
     }
 
-    pub fn get_untracked(&self) -> Ref<'_, T> {
-        self.inner.value.borrow()
+    pub fn get_untracked(&self) -> &T {
+        unsafe { &*self.inner.value.get() }
     }
 
     pub fn set(&self, value: T) {
-        *self.inner.value.borrow_mut() = value;
+        unsafe {
+            *self.inner.value.get() = value;
+        }
         self.inner.run_effects();
     }
 
@@ -87,7 +91,9 @@ impl<T> State<T> {
     where
         U: FnOnce(&mut T),
     {
-        updater(&mut self.inner.value.borrow_mut());
+        unsafe {
+            updater(&mut *self.inner.value.get());
+        }
 
         self.inner.add_active_effect();
         self.inner.run_effects();
@@ -114,6 +120,14 @@ impl<T: Display> fmt::Display for State<T> {
     }
 }
 
+impl<T> Deref for State<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        self.get()
+    }
+}
+
+// OPERATORS OVERLOADINGS
 impl<T> Add for &State<T>
 where
     T: Add<Output = T> + Copy,
