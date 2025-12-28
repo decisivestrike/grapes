@@ -1,3 +1,5 @@
+pub mod utils;
+
 pub mod component;
 pub use component::*;
 
@@ -38,17 +40,66 @@ pub use gtk::pango;
 pub use layer_shell;
 pub use tokio;
 
+use gtk::glib::clone;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
+use tokio::sync::mpsc;
+
+use crate::utils::LocalFuture;
 
 pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());
+
+pub fn state<T>(initial: T) -> State<T> {
+    State::new(initial)
+}
+
+pub fn effect<E>(e: E)
+where
+    E: Fn() + 'static,
+{
+    let effect = Effect::new(e);
+    Effect::set_active(Some(effect.clone()));
+    effect.call();
+    Effect::set_active(None);
+}
+
+pub fn derived<T, F>(f: F) -> State<T>
+where
+    F: Fn() -> T + 'static,
+    T: 'static,
+{
+    let state = State::new(f());
+
+    effect(clone!(
+        #[strong]
+        state,
+        move || state.set(f())
+    ));
+
+    state
+}
+
+pub fn background<T, F, Fut>(f: F) -> State<T>
+where
+    T: Clone + Default + 'static,
+    F: FnOnce(mpsc::Sender<T>) -> Fut,
+    Fut: Future<Output = ()> + Send + 'static,
+{
+    let state = state(T::default());
+    let (sender, receiver) = mpsc::channel(64);
+
+    RT.spawn(f(sender));
+
+    LocalFuture::spawn_state_listener(&state, receiver);
+
+    state
+}
 
 /// Run tests in single thread
 ///
 /// `cargo test -- --test-threads=1`
 #[cfg(test)]
 mod tests {
-
     use crate::prelude::*;
     use gtk::gdk::Monitor;
 

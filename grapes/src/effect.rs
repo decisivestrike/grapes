@@ -4,22 +4,11 @@ thread_local! {
     static ACTIVE_EFFECT: RefCell<Option<Effect>> = RefCell::new(None);
 }
 
-/// Register effect
-pub fn effect<E>(e: E)
-where
-    E: Fn() + 'static,
-{
-    let effect = Effect::new(e);
-    Effect::set_active(Some(effect.clone()));
-    effect.call();
-    Effect::set_active(None);
-}
-
 #[derive(Clone)]
 pub struct Effect(Rc<dyn Fn() + 'static>);
 
 impl Effect {
-    fn new<F>(f: F) -> Self
+    pub(crate) fn new<F>(f: F) -> Self
     where
         F: Fn() + 'static,
     {

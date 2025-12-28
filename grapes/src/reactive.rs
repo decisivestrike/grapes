@@ -1,7 +1,7 @@
 use gtk::glib::clone;
 use gtk::prelude::*;
 
-use crate::{State, derived, effect::effect};
+use crate::{State, derived, effect};
 
 pub trait Reactive<T> {
     fn statefull(initial: &State<T>) -> Self;
