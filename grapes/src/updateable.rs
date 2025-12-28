@@ -1,4 +1,4 @@
-use crate::State;
+use crate::{State, local::LocalState};
 
 pub trait Updateable: 'static {
     type Message: Clone + 'static;
@@ -6,7 +6,7 @@ pub trait Updateable: 'static {
     fn update(&self, message: Self::Message);
 }
 
-impl<T: Clone + 'static> Updateable for State<T> {
+impl<T: Clone + 'static> Updateable for LocalState<T> {
     type Message = T;
 
     fn update(&self, message: T) {

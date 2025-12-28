@@ -1,29 +1,25 @@
-use gtk::{
-    CssProvider, STYLE_PROVIDER_PRIORITY_APPLICATION,
-    STYLE_PROVIDER_PRIORITY_FALLBACK, STYLE_PROVIDER_PRIORITY_SETTINGS,
-    STYLE_PROVIDER_PRIORITY_THEME, STYLE_PROVIDER_PRIORITY_USER,
-};
+use gtk::CssProvider;
 use std::path::Path;
 
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StylePriority {
-    Fallback = STYLE_PROVIDER_PRIORITY_FALLBACK,
-    Theme = STYLE_PROVIDER_PRIORITY_THEME,
-    Settings = STYLE_PROVIDER_PRIORITY_SETTINGS,
-    Application = STYLE_PROVIDER_PRIORITY_APPLICATION,
-    User = STYLE_PROVIDER_PRIORITY_USER,
+    Fallback = gtk::STYLE_PROVIDER_PRIORITY_FALLBACK,
+    Theme = gtk::STYLE_PROVIDER_PRIORITY_THEME,
+    Settings = gtk::STYLE_PROVIDER_PRIORITY_SETTINGS,
+    Application = gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    User = gtk::STYLE_PROVIDER_PRIORITY_USER,
     Custom(u32),
 }
 
 impl From<StylePriority> for u32 {
     fn from(priority: StylePriority) -> u32 {
         match priority {
-            StylePriority::Fallback => STYLE_PROVIDER_PRIORITY_FALLBACK,
-            StylePriority::Theme => STYLE_PROVIDER_PRIORITY_THEME,
-            StylePriority::Settings => STYLE_PROVIDER_PRIORITY_SETTINGS,
-            StylePriority::Application => STYLE_PROVIDER_PRIORITY_APPLICATION,
-            StylePriority::User => STYLE_PROVIDER_PRIORITY_USER,
+            StylePriority::Fallback => gtk::STYLE_PROVIDER_PRIORITY_FALLBACK,
+            StylePriority::Theme => gtk::STYLE_PROVIDER_PRIORITY_THEME,
+            StylePriority::Settings => gtk::STYLE_PROVIDER_PRIORITY_SETTINGS,
+            StylePriority::Application => gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            StylePriority::User => gtk::STYLE_PROVIDER_PRIORITY_USER,
             StylePriority::Custom(v) => v,
         }
     }
@@ -50,8 +46,8 @@ impl Css {
     }
 
     pub fn apply(&self, priority: StylePriority) {
-        let display = gtk::gdk::Display::default()
-            .expect("Could not connect to a display.");
+        let display =
+            gtk::gdk::Display::default().expect("Could not connect to a display.");
 
         gtk::style_context_add_provider_for_display(
             &display,
