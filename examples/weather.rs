@@ -1,14 +1,13 @@
 use core::fmt;
 use grapes::{
-    Component, Connectable, GtkCompatible, Reactive, broadcast,
-    extensions::GrapesBoxExt,
+    Component, GtkCompatible, Reactive, background,
     glib::object::IsA,
     gtk::{
         self, Label, Orientation, Widget,
         gio::prelude::{ApplicationExt, ApplicationExtManual},
         prelude::GtkWindowExt,
     },
-    state,
+    prelude::containers::GrapesBoxExt,
     tokio::time::sleep,
 };
 use reqwest::Client;
@@ -69,8 +68,13 @@ struct Weather {
 
 impl Weather {
     fn new() -> Self {
-        let weather = state(CurrentWeather::default());
-        weather.connect_service::<WeatherService>();
+        let weather = background(async |sender| {
+            loop {
+                let weather = get_weather().await.unwrap_or_default();
+                sender.send(weather).await.unwrap();
+                sleep(Duration::from_secs(600)).await;
+            }
+        });
 
         let label = Label::statefull(&weather);
 
@@ -81,14 +85,6 @@ impl Weather {
 impl Component for Weather {
     const NAME: &str = "weather";
 }
-
-broadcast!(WeatherService -> CurrentWeather, async |tx| {
-    loop {
-        let weather = get_weather().await.unwrap_or_default();
-        tx.send(weather).unwrap();
-        sleep(Duration::from_secs(600)).await;
-    }
-});
 
 fn weather() -> impl IsA<Widget> {
     let clock = Weather::new();

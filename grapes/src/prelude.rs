@@ -9,7 +9,6 @@ pub use crate::reactive::Reactive;
 
 pub use crate::Component;
 pub use crate::GtkCompatible;
-pub use crate::Service;
 pub use crate::Updateable;
 
 pub use crate::RT;

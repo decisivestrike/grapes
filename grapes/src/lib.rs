@@ -1,5 +1,3 @@
-pub mod utils;
-
 pub mod component;
 pub use component::*;
 
@@ -14,14 +12,8 @@ pub mod extensions;
 pub mod reactive;
 pub use reactive::Reactive;
 
-pub mod service;
-pub use service::*;
-
 pub mod state;
 pub use state::*;
-
-pub mod connectable;
-pub use connectable::Connectable;
 
 pub mod timing;
 
@@ -44,8 +36,6 @@ use gtk::glib::clone;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
-
-use crate::utils::LocalFuture;
 
 pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());
 
@@ -90,7 +80,7 @@ where
 
     RT.spawn(f(sender));
 
-    LocalFuture::spawn_state_listener(&state, receiver);
+    state.spawn_listener_local(receiver);
 
     state
 }
@@ -100,7 +90,7 @@ where
 /// `cargo test -- --test-threads=1`
 #[cfg(test)]
 mod tests {
-    use crate::prelude::*;
+    use crate::prelude::{monitor::GrapesMonitorExt, *};
     use gtk::gdk::Monitor;
 
     static mut IS_INIT: bool = false;
