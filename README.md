@@ -1,5 +1,12 @@
 # Grapes
 
+> This library is in **early development**. Expect:
+>
+> - Frequent breaking changes
+> - Incomplete API
+> - Missing documentation
+> - Potential bugs
+
 Grapes is a library designed for convenient and reactive development with [gtk4-rs](https://github.com/gtk-rs/gtk4-rs) in Rust. Inspired by modern web frameworks, it provides primitives for reactive state management, simplifying GUI programming.
 
 With Grapes, you can easily build reactive interfaces, manage state updates automatically, and write more declarative code.
@@ -57,7 +64,3 @@ impl Weather {
     }
 }
 ```
-
-## Why use Grapes?
-
-GTK is powerful but low-level. Grapes brings higher-level abstractions for reactive programming while preserving full control over the underlying api — no black magic, just convenient helpers.
