@@ -1,5 +1,5 @@
 use grapes::{
-    State, derived,
+    derived,
     glib::clone,
     gtk::{self, Button, Label, Widget, prelude::*},
     reactive::Reactive,

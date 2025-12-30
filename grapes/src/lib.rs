@@ -4,11 +4,16 @@ pub use component::*;
 pub mod css;
 pub use css::Css;
 
-pub mod core;
+pub mod effect;
+pub use effect::*;
+
 pub mod extensions;
 
 pub mod reactive;
 pub use reactive::Reactive;
+
+pub mod state;
+pub use state::*;
 
 pub mod timing;
 
@@ -32,14 +37,10 @@ use std::sync::LazyLock;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
 
-use crate::core::local::effect::Effect;
-use crate::state::concurrent::ConcurrentState;
-use crate::state::local::LocalState;
-
 pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());
 
-pub fn state<T>(initial: T) -> LocalState<T> {
-    LocalState::new(initial)
+pub fn state<T>(initial: T) -> State<T> {
+    State::new(initial)
 }
 
 pub fn effect<E>(e: E)
@@ -52,12 +53,12 @@ where
     Effect::set_active(None);
 }
 
-pub fn derived<T, F>(f: F) -> LocalState<T>
+pub fn derived<T, F>(f: F) -> State<T>
 where
     F: Fn() -> T + 'static,
     T: 'static,
 {
-    let state = LocalState::new(f());
+    let state = State::new(f());
 
     effect(clone!(
         #[strong]
@@ -68,7 +69,7 @@ where
     state
 }
 
-pub fn background<T, F, Fut>(f: F) -> LocalState<T>
+pub fn background<T, F, Fut>(f: F) -> State<T>
 where
     T: Clone + Default + 'static,
     F: FnOnce(mpsc::Sender<T>) -> Fut,
@@ -80,22 +81,6 @@ where
     RT.spawn(f(sender));
 
     state.spawn_listener_local(receiver);
-
-    state
-}
-
-pub fn concurrent_background<T, F, Fut>(f: F) -> ConcurrentState<T>
-where
-    T: Clone + Default + 'static,
-    F: FnOnce(mpsc::Sender<T>) -> Fut,
-    Fut: Future<Output = ()> + Send + 'static,
-{
-    let state = ConcurrentState::new(T::default());
-    let (sender, receiver) = mpsc::channel(64);
-
-    RT.spawn(f(sender));
-
-    state.spawn_listener(receiver);
 
     state
 }
