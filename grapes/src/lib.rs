@@ -1,6 +1,8 @@
 pub mod component;
 pub use component::*;
 
+pub mod task;
+
 pub mod css;
 pub use css::Css;
 
@@ -32,7 +34,10 @@ pub use gtk::pango;
 pub use layer_shell;
 pub use tokio;
 
+use crate::task::Task;
 use gtk::glib::clone;
+use gtk::glib::clone::Downgrade;
+use gtk::glib::clone::Upgrade;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
@@ -81,6 +86,26 @@ where
     RT.spawn(f(sender));
 
     state.spawn_listener_local(receiver);
+
+    state
+}
+
+pub fn subscriber<T>(task: &Task<T>) -> State<T>
+where
+    T: Clone + Default,
+{
+    let state = state(T::default());
+    let mut receiver = task.subscribe();
+
+    let weak_state = state.downgrade();
+
+    glib::spawn_future_local(async move {
+        while let Ok(value) = receiver.recv().await
+            && let Some(state) = &weak_state.upgrade()
+        {
+            state.set(value)
+        }
+    });
 
     state
 }
