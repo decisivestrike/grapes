@@ -3,6 +3,8 @@ use crate::RT;
 use std::rc::Rc;
 use tokio::{sync::broadcast, task::JoinHandle};
 
+// type TaskFuture = impl Future<Output = ()> + Send + 'static;
+
 pub trait TaskFuture: Future<Output = ()> + Send + 'static {}
 impl<T> TaskFuture for T where T: Future<Output = ()> + Send + 'static {}
 
