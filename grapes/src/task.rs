@@ -4,9 +4,16 @@ use std::rc::Rc;
 use tokio::{sync::broadcast, task::JoinHandle};
 
 pub trait TaskFuture: Future<Output = ()> + Send + 'static {}
+impl<T> TaskFuture for T where T: Future<Output = ()> + Send + 'static {}
 
 pub trait TaskFn<T, F>: FnOnce(broadcast::Sender<T>) -> F
 where
+    F: TaskFuture,
+{
+}
+impl<A, T, F> TaskFn<T, F> for A
+where
+    A: FnOnce(broadcast::Sender<T>) -> F,
     F: TaskFuture,
 {
 }
@@ -14,6 +21,12 @@ where
 pub trait ChainFn<T, F>:
     FnOnce(broadcast::Receiver<T>, broadcast::Sender<T>) -> F
 where
+    F: TaskFuture,
+{
+}
+impl<A, T, F> ChainFn<T, F> for A
+where
+    A: FnOnce(broadcast::Receiver<T>, broadcast::Sender<T>) -> F,
     F: TaskFuture,
 {
 }
@@ -34,9 +47,8 @@ where
     F: TaskFuture,
 {
     let receiver = parent.subscribe();
-    let task = Task::chained(receiver, f);
 
-    task
+    Task::chained(receiver, f)
 }
 
 #[derive(Debug, Clone)]

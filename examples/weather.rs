@@ -1,6 +1,6 @@
 use core::fmt;
 use grapes::{
-    Component, GtkCompatible, Reactive, background,
+    Component, GtkCompatible, Reactive,
     glib::object::IsA,
     gtk::{
         self, Label, Orientation, Widget,
@@ -8,6 +8,8 @@ use grapes::{
         prelude::GtkWindowExt,
     },
     prelude::containers::GrapesBoxExt,
+    subscriber,
+    task::task,
     tokio::time::sleep,
 };
 use reqwest::Client;
@@ -68,13 +70,13 @@ struct Weather {
 
 impl Weather {
     fn new() -> Self {
-        let weather = background(async |sender| {
+        let weather = subscriber(&task(async |sender| {
             loop {
                 let weather = get_weather().await.unwrap_or_default();
-                sender.send(weather).await.unwrap();
+                sender.send(weather).unwrap();
                 sleep(Duration::from_secs(600)).await;
             }
-        });
+        }));
 
         let label = Label::statefull(&weather);
 

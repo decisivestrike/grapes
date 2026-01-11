@@ -36,14 +36,12 @@ pub use tokio;
 
 use crate::task::Task;
 use gtk::glib::clone;
-use gtk::glib::clone::Downgrade;
-use gtk::glib::clone::Upgrade;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
-use tokio::sync::mpsc;
 
 pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());
 
+#[inline]
 pub fn state<T>(initial: T) -> State<T> {
     State::new(initial)
 }
@@ -74,38 +72,14 @@ where
     state
 }
 
-pub fn background<T, F, Fut>(f: F) -> State<T>
-where
-    T: Clone + Default + 'static,
-    F: FnOnce(mpsc::Sender<T>) -> Fut,
-    Fut: Future<Output = ()> + Send + 'static,
-{
-    let state = state(T::default());
-    let (sender, receiver) = mpsc::channel(64);
-
-    RT.spawn(f(sender));
-
-    state.spawn_listener_local(receiver);
-
-    state
-}
-
 pub fn subscriber<T>(task: &Task<T>) -> State<T>
 where
     T: Clone + Default,
 {
     let state = state(T::default());
-    let mut receiver = task.subscribe();
+    let receiver = task.subscribe();
 
-    let weak_state = state.downgrade();
-
-    glib::spawn_future_local(async move {
-        while let Ok(value) = receiver.recv().await
-            && let Some(state) = &weak_state.upgrade()
-        {
-            state.set(value)
-        }
-    });
+    state.spawn_listener_local(receiver);
 
     state
 }

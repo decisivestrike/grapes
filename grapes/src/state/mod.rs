@@ -11,7 +11,7 @@ use std::{
     fmt::{Debug, Display},
     rc::Rc,
 };
-use tokio::sync::mpsc;
+use tokio::sync::broadcast;
 
 /// Reactive state with counter clone semantic
 #[derive(Default, glib::Downgrade)]
@@ -50,15 +50,15 @@ impl<T> State<T> {
 
     pub fn spawn_listener_local(
         &self,
-        mut receiver: mpsc::Receiver<T>,
+        mut receiver: broadcast::Receiver<T>,
     ) -> glib::JoinHandle<()>
     where
-        T: 'static,
+        T: Clone + 'static,
     {
         let weak_state = self.downgrade();
 
         glib::spawn_future_local(async move {
-            while let Some(value) = receiver.recv().await
+            while let Ok(value) = receiver.recv().await
                 && let Some(state) = &weak_state.upgrade()
             {
                 state.set(value)
