@@ -42,7 +42,7 @@ where
     T: ToString + 'static,
 {
     fn statefull(label: &State<T>) -> Self {
-        let button = gtk::Label::new(Some(&label.get().to_string()));
+        let button = gtk::Label::new(None);
 
         effect(clone!(
             #[strong]
