@@ -29,6 +29,7 @@ impl<T> State<T> {
         self.get_untracked()
     }
 
+    /// Get without adding active effect
     pub fn get_untracked(&self) -> &T {
         &self.inner().value
     }
@@ -48,6 +49,7 @@ impl<T> State<T> {
         self.inner().run_effects();
     }
 
+    /// Spawn local future which listen receiver and update state when receiving messages
     pub fn spawn_listener_local(
         &self,
         mut receiver: broadcast::Receiver<T>,

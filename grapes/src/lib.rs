@@ -34,18 +34,23 @@ pub use gtk::pango;
 pub use layer_shell;
 pub use tokio;
 
+use crate::task::ChainFn;
 use crate::task::Task;
+use crate::task::TaskFn;
+use crate::task::TaskFuture;
 use gtk::glib::clone;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
 
 pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());
 
+/// Creates state
 #[inline]
 pub fn state<T>(initial: T) -> State<T> {
     State::new(initial)
 }
 
+/// Creates effect
 pub fn effect<E>(e: E)
 where
     E: Fn() + 'static,
@@ -56,6 +61,7 @@ where
     Effect::set_active(None);
 }
 
+/// Creates state which depends on another state
 pub fn derived<T, F>(f: F) -> State<T>
 where
     F: Fn() -> T + 'static,
@@ -72,6 +78,29 @@ where
     state
 }
 
+/// Creates async background task
+#[inline]
+pub fn task<T, F>(f: impl TaskFn<T, F>) -> Task<T>
+where
+    T: Clone + 'static,
+    F: TaskFuture,
+{
+    Task::new(f)
+}
+
+/// Creates task which listen another task channel
+#[inline]
+pub fn chain<T, F>(parent: &Task<T>, f: impl ChainFn<T, F>) -> Task<T>
+where
+    T: Clone + 'static,
+    F: TaskFuture,
+{
+    let receiver = parent.subscribe();
+
+    Task::chained(receiver, f)
+}
+
+/// Creates state which listen task channel
 pub fn subscriber<T>(task: &Task<T>) -> State<T>
 where
     T: Clone + Default,

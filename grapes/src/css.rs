@@ -5,6 +5,7 @@ use gtk::{
 };
 use std::path::Path;
 
+/// Something better when C-like constants
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StylePriority {
@@ -29,6 +30,7 @@ impl From<StylePriority> for u32 {
     }
 }
 
+/// Wrapper around `gtk::CssProvider`
 #[derive(Debug, Clone)]
 pub struct Css {
     provider: CssProvider,

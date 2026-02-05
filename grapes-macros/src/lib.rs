@@ -7,8 +7,8 @@ use quote::quote;
 use syn::{Data, DeriveInput, Fields, parse_macro_input};
 
 /// Generates code that will have to be written anyway
-#[proc_macro_derive(GtkCompatible, attributes(root, state))]
-pub fn gtk_compatible(input: TokenStream) -> TokenStream {
+#[proc_macro_derive(Component, attributes(root, state))]
+pub fn component(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 
@@ -31,7 +31,7 @@ pub fn gtk_compatible(input: TokenStream) -> TokenStream {
                     }
 
                     let expanded = quote! {
-                        impl GtkCompatible for #struct_name {
+                        impl Component for #struct_name {
                             fn as_widget_ref(&self) -> &::grapes::gtk::Widget {
                                 use ::grapes::gtk::prelude::Cast;
                                 self.#field_name.upcast_ref()

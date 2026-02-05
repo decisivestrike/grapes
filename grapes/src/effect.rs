@@ -4,6 +4,7 @@ thread_local! {
     static ACTIVE_EFFECT: RefCell<Option<Effect>> = RefCell::new(None);
 }
 
+/// Effects are functions that run when state updates
 #[derive(Clone)]
 pub struct Effect(Rc<dyn Fn() + 'static>);
 

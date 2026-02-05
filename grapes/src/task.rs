@@ -3,6 +3,7 @@ use crate::RT;
 use std::rc::Rc;
 use tokio::{sync::broadcast, task::JoinHandle};
 
+// impl Trait in type aliases is still unstable :(
 // type TaskFuture = impl Future<Output = ()> + Send + 'static;
 
 pub trait TaskFuture: Future<Output = ()> + Send + 'static {}
@@ -33,26 +34,7 @@ where
 {
 }
 
-#[inline]
-pub fn task<T, F>(f: impl TaskFn<T, F>) -> Task<T>
-where
-    T: Clone + 'static,
-    F: TaskFuture,
-{
-    Task::new(f)
-}
-
-#[inline]
-pub fn chain<T, F>(parent: &Task<T>, f: impl ChainFn<T, F>) -> Task<T>
-where
-    T: Clone + 'static,
-    F: TaskFuture,
-{
-    let receiver = parent.subscribe();
-
-    Task::chained(receiver, f)
-}
-
+/// Async background task
 #[derive(Debug, Clone)]
 pub struct Task<T>
 where

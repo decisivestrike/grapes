@@ -1,6 +1,6 @@
 use core::fmt;
 use grapes::{
-    Component, GtkCompatible, Reactive,
+    Component, Reactive,
     glib::object::IsA,
     gtk::{
         self, Label, Orientation, Widget,
@@ -8,8 +8,7 @@ use grapes::{
         prelude::GtkWindowExt,
     },
     prelude::containers::GrapesBoxExt,
-    subscriber,
-    task::task,
+    subscriber, task,
     tokio::time::sleep,
 };
 use reqwest::Client;
@@ -62,7 +61,7 @@ pub async fn get_weather() -> Result<CurrentWeather, Box<dyn std::error::Error>>
     Ok(resp.current)
 }
 
-#[derive(GtkCompatible, Clone)]
+#[derive(Component, Clone)]
 struct Weather {
     #[root]
     label: Label,
@@ -82,10 +81,6 @@ impl Weather {
 
         Self { label }
     }
-}
-
-impl Component for Weather {
-    const NAME: &str = "weather";
 }
 
 fn weather() -> impl IsA<Widget> {
