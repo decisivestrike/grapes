@@ -7,3 +7,9 @@ pub trait WindowComponent {
 
     fn destroy(&self);
 }
+
+pub trait UpdateableComponent: 'static {
+    type Message: Clone + 'static;
+
+    fn update(&self, message: Self::Message);
+}

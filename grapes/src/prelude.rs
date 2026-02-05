@@ -8,7 +8,7 @@ pub use gtk::prelude::*;
 pub use crate::reactive::Reactive;
 
 pub use crate::Component;
-pub use crate::Updateable;
+pub use crate::UpdateableComponent;
 
 pub use crate::RT;
 pub use crate::extensions::*;
