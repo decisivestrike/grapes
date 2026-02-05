@@ -3,16 +3,17 @@ use gtk::prelude::*;
 
 use crate::{State, derived, effect};
 
+/// Allows you to bind a state to a gtk widget
 pub trait Reactive<T> {
     fn statefull(initial: &State<T>) -> Self;
 
-    fn derived<F>(e: F) -> Self
+    fn derived<F>(f: F) -> Self
     where
         Self: Sized,
         F: Fn() -> T + 'static,
         T: 'static,
     {
-        let derived = derived(e);
+        let derived = derived(f);
 
         Self::statefull(&derived)
     }
