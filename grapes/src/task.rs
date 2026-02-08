@@ -1,6 +1,7 @@
+use std::sync::Arc;
+
 use crate::RT;
 
-use std::rc::Rc;
 use tokio::{sync::broadcast, task::JoinHandle};
 
 // impl Trait in type aliases is still unstable :(
@@ -41,7 +42,7 @@ where
     T: Clone + 'static,
 {
     sender: broadcast::Sender<T>,
-    handle: Rc<JoinHandle<()>>,
+    handle: Arc<JoinHandle<()>>,
 }
 
 impl<T> Task<T>
@@ -71,7 +72,7 @@ where
         Task { sender, handle }
     }
 
-    pub fn handle(&self) -> Rc<JoinHandle<()>> {
+    pub fn handle(&self) -> Arc<JoinHandle<()>> {
         self.handle.clone()
     }
 

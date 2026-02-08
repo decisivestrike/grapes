@@ -1,7 +1,8 @@
 pub mod component;
 pub use component::*;
 
-pub mod task;
+mod task;
+pub use task::Task;
 
 pub mod css;
 pub use css::Css;
@@ -32,7 +33,6 @@ pub use layer_shell;
 pub use tokio;
 
 use crate::task::ChainFn;
-use crate::task::Task;
 use crate::task::TaskFn;
 use crate::task::TaskFuture;
 use gtk::glib::clone;
