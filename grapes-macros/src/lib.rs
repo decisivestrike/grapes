@@ -97,3 +97,55 @@ pub fn component(input: TokenStream) -> TokenStream {
         }
     }
 }
+
+/// Generates code that will have to be written anyway
+#[proc_macro_derive(WindowComponent, attributes(root))]
+pub fn window_component(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let struct_name = &input.ident;
+
+    let mut maybe_root_ts: Option<TokenStream2> = None;
+
+    if let Data::Struct(data_struct) = input.data
+        && let Fields::Named(named_fields) = data_struct.fields
+    {
+        for field in named_fields.named.iter() {
+            for attr in &field.attrs {
+                if attr.path().is_ident("root") {
+                    let field_name = &field.ident;
+
+                    if maybe_root_ts.is_some() {
+                        return error(
+                            struct_name,
+                            "Only one field can have the #[root] attribute.",
+                        );
+                    }
+
+                    let expanded = quote! {
+                        impl WindowComponent for #struct_name {
+                            /// Window present
+                            fn present(&self) {
+                                self.#field_name.present();
+                            }
+
+                            /// Window destroy
+                            fn destroy(&self) {
+                                self.#field_name.destroy();
+                            }
+                        }
+                    };
+
+                    maybe_root_ts = Some(expanded);
+                }
+            }
+        }
+    }
+
+    match maybe_root_ts {
+        None => error(
+            struct_name,
+            "One of the fields must have the #[root] attribute.",
+        ),
+        Some(root_ts) => root_ts.into(),
+    }
+}
