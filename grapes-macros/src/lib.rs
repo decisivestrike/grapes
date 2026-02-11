@@ -31,16 +31,12 @@ pub fn component(input: TokenStream) -> TokenStream {
                     }
 
                     let expanded = quote! {
-                        impl Component for #struct_name {
-                            fn as_widget_ref(&self) -> &::grapes::gtk::Widget {
-                                use ::grapes::gtk::prelude::Cast;
-                                self.#field_name.upcast_ref()
-                            }
-                        }
+                        impl Component for #struct_name {}
 
                         impl AsRef<::grapes::gtk::Widget> for #struct_name {
                             fn as_ref(&self) -> &::grapes::gtk::Widget {
-                                self.as_widget_ref()
+                                use ::grapes::gtk::prelude::Cast;
+                                self.#field_name.upcast_ref()
                             }
                         }
                     };

@@ -1,5 +1,9 @@
-pub trait Component: AsRef<gtk::Widget> + Clone + 'static {
-    fn as_widget_ref(&self) -> &gtk::Widget;
+use gtk::glib::{WeakRef, object::ObjectExt};
+
+pub trait Component: AsRef<gtk::Widget> + 'static {
+    fn as_weak_ref(&self) -> WeakRef<gtk::Widget> {
+        self.as_ref().downgrade()
+    }
 }
 
 pub trait WindowComponent {
