@@ -38,7 +38,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                         impl #impl_generics AsRef<::grapes::gtk::Widget> for #struct_name #ty_generics {
                             fn as_ref(&self) -> &::grapes::gtk::Widget {
                                 use ::grapes::gtk::prelude::Cast;
-                                self.#field_name.upcast_ref()
+                                self.#field_name.as_ref()
                             }
                         }
                     };
