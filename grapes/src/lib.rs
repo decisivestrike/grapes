@@ -2,6 +2,7 @@ pub mod component;
 pub use component::*;
 
 mod task;
+pub use task::SubscribableTask;
 pub use task::Task;
 
 pub mod css;
@@ -18,8 +19,6 @@ pub use reactive::Reactive;
 pub mod state;
 pub use state::*;
 
-pub mod timing;
-
 pub mod prelude;
 
 pub use grapes_macros::*;
@@ -32,10 +31,8 @@ pub use gtk::pango;
 pub use layer_shell;
 pub use tokio;
 
-use crate::task::ChainFn;
-use crate::task::TaskFn;
-use crate::task::TaskFuture;
 use gtk::glib::clone;
+use std::rc::Rc;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
 
@@ -43,8 +40,8 @@ pub static RT: LazyLock<Runtime> = LazyLock::new(|| Runtime::new().unwrap());
 
 /// Creates state
 #[inline]
-pub fn state<T>(initial: T) -> State<T> {
-    State::new(initial)
+pub fn state<T>(initial: T) -> Rc<State<T>> {
+    State::new(initial).into()
 }
 
 /// Creates effect
@@ -59,53 +56,18 @@ where
 }
 
 /// Creates state which depends on another state
-pub fn derived<T, F>(f: F) -> State<T>
+pub fn derived<T, F>(f: F) -> Rc<State<T>>
 where
     F: Fn() -> T + 'static,
     T: 'static,
 {
-    let state = State::new(f());
+    let state = state(f());
 
     effect(clone!(
         #[strong]
         state,
         move || state.set(f())
     ));
-
-    state
-}
-
-/// Creates async background task
-#[inline]
-pub fn task<T, F>(f: impl TaskFn<T, F>) -> Task<T>
-where
-    T: Clone + 'static,
-    F: TaskFuture,
-{
-    Task::new(f)
-}
-
-/// Creates task which listen another task channel
-#[inline]
-pub fn chain<T, F>(parent: &Task<T>, f: impl ChainFn<T, F>) -> Task<T>
-where
-    T: Clone + 'static,
-    F: TaskFuture,
-{
-    let receiver = parent.subscribe();
-
-    Task::chained(receiver, f)
-}
-
-/// Creates state which listen task channel
-pub fn subscriber<T>(task: &Task<T>) -> State<T>
-where
-    T: Clone + Default,
-{
-    let state = state(T::default());
-    let receiver = task.subscribe();
-
-    state.spawn_listener_local(receiver);
 
     state
 }

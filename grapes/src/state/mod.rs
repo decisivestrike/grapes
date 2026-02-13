@@ -1,25 +1,21 @@
 pub(crate) mod inner;
 
-use crate::inner::StateInner;
+use crate::{inner::StateInner, task::SubscribableTask};
 use core::fmt;
-use gtk::glib::{
-    self,
-    clone::{Downgrade, Upgrade},
-};
+use gtk::glib::{self, clone::Downgrade};
 use std::{
     cell::UnsafeCell,
     fmt::{Debug, Display},
     rc::Rc,
 };
-use tokio::sync::broadcast;
 
 /// Reactive state with counter clone semantic
-#[derive(Default, glib::Downgrade)]
-pub struct State<T>(Rc<UnsafeCell<StateInner<T>>>);
+#[derive(Default)]
+pub struct State<T>(UnsafeCell<StateInner<T>>);
 
 impl<T> State<T> {
     pub fn new(value: T) -> Self {
-        let inner = Rc::new(StateInner::new(value).into());
+        let inner = StateInner::new(value).into();
 
         Self(inner)
     }
@@ -50,14 +46,15 @@ impl<T> State<T> {
     }
 
     /// Spawn local future which listen receiver and update state when receiving messages
-    pub fn spawn_listener_local(
-        &self,
-        mut receiver: broadcast::Receiver<T>,
+    pub fn track(
+        self: &Rc<Self>,
+        task: &SubscribableTask<T>,
     ) -> glib::JoinHandle<()>
     where
         T: Clone + 'static,
     {
         let weak_state = self.downgrade();
+        let mut receiver = task.sender().subscribe();
 
         glib::spawn_future_local(async move {
             while let Ok(value) = receiver.recv().await
@@ -74,12 +71,6 @@ impl<T> State<T> {
 
     fn inner_mut(&self) -> &mut StateInner<T> {
         unsafe { &mut *self.0.get() }
-    }
-}
-
-impl<T> Clone for State<T> {
-    fn clone(&self) -> Self {
-        Self(self.0.clone())
     }
 }
 

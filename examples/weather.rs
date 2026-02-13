@@ -1,6 +1,6 @@
 use core::fmt;
 use grapes::{
-    Component, Reactive,
+    Component, Reactive, SubscribableTask, Task,
     glib::object::IsA,
     gtk::{
         self, Label, Orientation, Widget,
@@ -8,7 +8,7 @@ use grapes::{
         prelude::GtkWindowExt,
     },
     prelude::containers::GrapesBoxExt,
-    subscriber, task,
+    state,
     tokio::time::sleep,
 };
 use reqwest::Client;
@@ -61,25 +61,32 @@ pub async fn get_weather() -> Result<CurrentWeather, Box<dyn std::error::Error>>
     Ok(resp.current)
 }
 
-#[derive(Component, Clone)]
+#[derive(Component)]
 struct Weather {
     #[root]
     label: Label,
+    _weather_task: SubscribableTask<CurrentWeather>,
 }
 
 impl Weather {
     fn new() -> Self {
-        let weather = subscriber(&task(async |sender| {
+        let _weather_task = Task::subscribable(async |sender, _| {
             loop {
                 let weather = get_weather().await.unwrap_or_default();
                 sender.send(weather).unwrap();
                 sleep(Duration::from_secs(600)).await;
             }
-        }));
+        });
+
+        let weather = state(CurrentWeather::default());
+        weather.track(&_weather_task);
 
         let label = Label::statefull(&weather);
 
-        Self { label }
+        Self {
+            label,
+            _weather_task,
+        }
     }
 }
 
