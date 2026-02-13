@@ -1,6 +1,9 @@
 mod subscribable;
 pub use subscribable::SubscribableTask;
 
+mod lazy;
+pub use lazy::LazyTask;
+
 use crate::RT;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -37,6 +40,7 @@ impl Task {
         SubscribableTask::new(f)
     }
 
+    /// Start task before using it
     pub(crate) fn from_parts(token: CancellationToken) -> Self {
         Task { token }
     }

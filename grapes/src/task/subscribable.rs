@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::{RT, State, Task, state};
+use crate::{RT, State, Task};
 use gtk::glib::{self, clone::Downgrade};
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -14,7 +14,7 @@ where
     sender: broadcast::Sender<T>,
 
     /// For drop
-    _task: super::Task,
+    _task: Task,
 }
 
 impl<T> SubscribableTask<T>
@@ -38,10 +38,7 @@ where
         }
     }
 
-    /// Creates new state
-    pub fn subscriber(&self) -> Rc<State<Option<T>>> {
-        let state = state(None);
-
+    pub fn bind(&self, state: &Rc<State<T>>) {
         let weak_state = state.downgrade();
         let mut receiver = self.sender.subscribe();
 
@@ -49,14 +46,19 @@ where
             while let Ok(value) = receiver.recv().await
                 && let Some(state) = &weak_state.upgrade()
             {
-                state.set(Some(value))
+                state.set(value)
             }
         });
-
-        state
     }
 
     pub fn sender(&self) -> broadcast::Sender<T> {
         self.sender.clone()
+    }
+
+    pub(crate) fn from_parts(sender: broadcast::Sender<T>, task: Task) -> Self {
+        Self {
+            sender,
+            _task: task,
+        }
     }
 }
