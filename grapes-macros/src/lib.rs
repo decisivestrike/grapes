@@ -12,6 +12,8 @@ pub fn component(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 
+    let (impl_generics, ty_generics, _) = input.generics.split_for_impl();
+
     let mut maybe_root_ts: Option<TokenStream2> = None;
     let mut maybe_state_ts: Option<TokenStream2> = None;
 
@@ -31,9 +33,9 @@ pub fn component(input: TokenStream) -> TokenStream {
                     }
 
                     let expanded = quote! {
-                        impl Component for #struct_name {}
+                        impl #impl_generics Component for #struct_name #ty_generics {}
 
-                        impl AsRef<::grapes::gtk::Widget> for #struct_name {
+                        impl #impl_generics AsRef<::grapes::gtk::Widget> for #struct_name #ty_generics {
                             fn as_ref(&self) -> &::grapes::gtk::Widget {
                                 use ::grapes::gtk::prelude::Cast;
                                 self.#field_name.upcast_ref()
@@ -64,7 +66,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                     };
 
                     let expanded = quote! {
-                        impl ::grapes::Updateable for #struct_name {
+                        impl #impl_generics ::grapes::Updateable for #struct_name #ty_generics {
                             type Message = #generic_type;
 
                             fn update(&self, value: #generic_type) {

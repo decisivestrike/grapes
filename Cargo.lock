@@ -467,6 +467,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "grapes-components"
+version = "0.1.0"
+dependencies = [
+ "grapes",
+]
+
+[[package]]
 name = "grapes-macros"
 version = "0.1.0"
 dependencies = [
