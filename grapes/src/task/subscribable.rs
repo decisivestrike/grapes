@@ -54,11 +54,4 @@ where
     pub fn sender(&self) -> broadcast::Sender<T> {
         self.sender.clone()
     }
-
-    pub(crate) fn from_parts(sender: broadcast::Sender<T>, task: Task) -> Self {
-        Self {
-            sender,
-            _task: task,
-        }
-    }
 }
