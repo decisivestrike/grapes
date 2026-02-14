@@ -1,52 +1,37 @@
-mod subscribable;
-pub use subscribable::SubscribableTask;
+use tokio::task::JoinHandle;
 
-mod lazy;
-pub use lazy::LazyTask;
+mod respawnable;
+pub use respawnable::RespawnableTask;
 
 use crate::RT;
-use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
-// impl Trait in type aliases is still unstable :(
-// type TaskFuture = impl Future<Output = ()> + Send + 'static;
-pub trait TaskFuture: Future<Output = ()> + Send + 'static {}
-impl<T> TaskFuture for T where T: Future<Output = ()> + Send + 'static {}
-
-/// Async background task
+/// Simple RAII wraper for tokio task
 #[derive(Debug)]
-pub struct Task {
+pub struct Task<T> {
+    handle: JoinHandle<T>,
     token: CancellationToken,
 }
 
-impl Task {
+impl<T> Task<T> {
+    /// You can pass here the CancellationToken that you use inside the closure
     pub fn new<F>(f: impl FnOnce(CancellationToken) -> F) -> Self
     where
-        F: TaskFuture,
+        F: Future<Output = T> + Send + 'static,
+        T: Send + 'static,
     {
         let token = CancellationToken::new();
-        RT.spawn(f(token.clone()));
+        let handle = RT.spawn(f(token.clone()));
 
-        Task { token }
+        Task { token, handle }
     }
 
-    pub fn subscribable<T, F>(
-        f: impl FnOnce(broadcast::Sender<T>, CancellationToken) -> F,
-    ) -> SubscribableTask<T>
-    where
-        T: Clone,
-        F: TaskFuture,
-    {
-        SubscribableTask::new(f)
-    }
-
-    /// Start task before using it
-    pub(crate) fn from_parts(token: CancellationToken) -> Self {
-        Task { token }
+    pub fn handle(&self) -> &JoinHandle<T> {
+        &self.handle
     }
 }
 
-impl Drop for Task {
+impl<T> Drop for Task<T> {
     fn drop(&mut self) {
         self.token.cancel();
     }

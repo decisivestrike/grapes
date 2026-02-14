@@ -1,6 +1,6 @@
 use core::fmt;
 use grapes::{
-    Component, Reactive, SubscribableTask, Task,
+    Component, Reactive, Task,
     glib::object::IsA,
     gtk::{
         self, Label, Orientation, Widget,
@@ -9,7 +9,7 @@ use grapes::{
     },
     prelude::containers::GrapesBoxExt,
     state,
-    tokio::time::sleep,
+    tokio::{sync::broadcast, time::sleep},
 };
 use reqwest::Client;
 use serde::Deserialize;
@@ -65,21 +65,23 @@ pub async fn get_weather() -> Result<CurrentWeather, Box<dyn std::error::Error>>
 struct Weather {
     #[root]
     label: Label,
-    _weather_task: SubscribableTask<CurrentWeather>,
+    _weather_task: Task<CurrentWeather>,
 }
 
 impl Weather {
     fn new() -> Self {
-        let _weather_task = Task::subscribable(async |sender, _| {
+        let sender = broadcast::Sender::new(64);
+
+        let weather = state(CurrentWeather::default());
+        weather.track(&sender);
+
+        let _weather_task = Task::new(async move |_| {
             loop {
                 let weather = get_weather().await.unwrap_or_default();
                 sender.send(weather).unwrap();
                 sleep(Duration::from_secs(600)).await;
             }
         });
-
-        let weather = state(CurrentWeather::default());
-        weather.track(&_weather_task);
 
         let label = Label::statefull(&weather);
 

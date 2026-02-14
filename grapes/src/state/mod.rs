@@ -1,8 +1,10 @@
 pub(crate) mod inner;
 
-use crate::{inner::StateInner, task::SubscribableTask};
-use core::fmt;
 use gtk::glib::{self, clone::Downgrade};
+use tokio::sync::broadcast;
+
+use crate::inner::StateInner;
+use core::fmt;
 use std::{
     cell::UnsafeCell,
     fmt::{Debug, Display},
@@ -48,13 +50,13 @@ impl<T> State<T> {
     /// Spawn local future which listen receiver and update state when receiving messages
     pub fn track(
         self: &Rc<Self>,
-        task: &SubscribableTask<T>,
+        sender: &broadcast::Sender<T>,
     ) -> glib::JoinHandle<()>
     where
         T: Clone + 'static,
     {
         let weak_state = self.downgrade();
-        let mut receiver = task.sender().subscribe();
+        let mut receiver = sender.subscribe();
 
         glib::spawn_future_local(async move {
             while let Ok(value) = receiver.recv().await
