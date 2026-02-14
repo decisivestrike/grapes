@@ -1,60 +1,65 @@
-use crate::{RT, State, SubscribableTask, Task, task::TaskFuture};
-use std::rc::Rc;
-use tokio::sync::{RwLock, broadcast};
-use tokio_util::sync::CancellationToken;
+use crate::{RT, State};
+use gtk::glib::{self, clone::Downgrade};
+use std::{
+    rc::Rc,
+    sync::{Arc, mpsc::SendError},
+};
+use tokio::sync::broadcast;
+use tokio::task::JoinHandle;
 
-pub struct LazyTask<T, C, F>
+pub struct LazyTask<T, TaskFn, F>
 where
-    T: Clone + 'static,
-    C: Fn(broadcast::Sender<T>, CancellationToken) -> F,
-    F: TaskFuture,
+    T: Clone + Send + 'static,
+    TaskFn: Fn(broadcast::Sender<T>) -> F + Send + Sync + 'static,
+    F: Future<Output = Result<(), SendError<T>>> + Send + 'static,
 {
-    f: C,
-    task: RwLock<Option<SubscribableTask<T>>>,
+    f: Arc<TaskFn>,
+    sender: broadcast::Sender<T>,
+    maybe_handle: Option<JoinHandle<()>>,
 }
 
-impl<T, C, F> LazyTask<T, C, F>
+impl<T, TaskFn, F> LazyTask<T, TaskFn, F>
 where
-    T: Clone + 'static,
-    C: Fn(broadcast::Sender<T>, CancellationToken) -> F,
-    F: TaskFuture,
+    T: Clone + Send + 'static,
+    TaskFn: Fn(broadcast::Sender<T>) -> F + Send + Sync + 'static,
+    F: Future<Output = Result<(), SendError<T>>> + Send + 'static,
 {
-    pub const fn new(f: C) -> Self {
+    pub fn new(f: TaskFn) -> Self {
         Self {
-            f,
-            task: RwLock::const_new(None),
+            f: Arc::new(f),
+            sender: broadcast::Sender::new(64),
+            maybe_handle: None,
         }
     }
 
-    pub fn bind(&self, state: &Rc<State<T>>) {
-        let mut maybe_task = self.task.blocking_write();
+    pub fn bind(&mut self, state: &Rc<State<T>>) {
+        match &self.maybe_handle {
+            Some(_) => {
+                let weak_state = state.downgrade();
+                let mut receiver = self.sender.subscribe();
 
-        match &*maybe_task {
-            Some(task) => task.bind(state),
+                glib::spawn_future_local(async move {
+                    while let Ok(value) = receiver.recv().await
+                        && let Some(state) = &weak_state.upgrade()
+                    {
+                        state.set(value)
+                    }
+                });
+            }
             None => {
-                let token = CancellationToken::new();
-                let (sender, _) = broadcast::channel(64);
+                let sender = self.sender.clone();
+                let f = self.f.clone();
 
-                RT.spawn((self.f)(sender.clone(), token.clone()));
+                let handle = RT.spawn(async move {
+                    loop {
+                        if let Err(_) = f(sender.clone()).await {
+                            break;
+                        }
+                    }
+                });
 
-                let task = Task::from_parts(token);
-                let subscribable_task =
-                    SubscribableTask::from_parts(sender, task);
-
-                *maybe_task = Some(subscribable_task);
+                self.maybe_handle = Some(handle);
             }
         }
     }
-
-    pub fn turn_off(&mut self) {
-        _ = self.task.blocking_write().take();
-    }
-}
-
-unsafe impl<T, C, F> Sync for LazyTask<T, C, F>
-where
-    T: Clone + 'static,
-    C: Fn(broadcast::Sender<T>, CancellationToken) -> F,
-    F: TaskFuture,
-{
 }
