@@ -2,7 +2,6 @@ pub mod component;
 pub use component::*;
 
 mod task;
-pub use task::RespawnableTask;
 pub use task::Task;
 
 pub mod css;

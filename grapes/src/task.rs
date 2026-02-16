@@ -1,9 +1,5 @@
-use tokio::task::JoinHandle;
-
-mod respawnable;
-pub use respawnable::RespawnableTask;
-
 use crate::RT;
+use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 
 /// Simple RAII wraper for tokio task

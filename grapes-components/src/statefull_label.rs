@@ -1,4 +1,4 @@
-use grapes::{Component, State, gtk};
+use grapes::{Component, State, effect, glib::clone::Downgrade, gtk};
 use std::rc::Rc;
 
 #[derive(Debug, Component)]
@@ -16,8 +16,23 @@ where
     T: AsRef<str>,
 {
     pub fn new(state: &Rc<State<T>>) -> StatefullLabel<T> {
+        let label = gtk::Label::new(None);
+
+        {
+            let weak_state = state.downgrade();
+            let weak_label = label.downgrade();
+
+            effect(move || {
+                if let Some(state) = weak_state.upgrade()
+                    && let Some(label) = weak_label.upgrade()
+                {
+                    label.set_label(state.get().as_ref());
+                }
+            });
+        }
+
         Self {
-            label: gtk::Label::new(None),
+            label,
             state: state.clone(),
         }
     }
