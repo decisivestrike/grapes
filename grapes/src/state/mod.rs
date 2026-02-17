@@ -34,7 +34,7 @@ impl<T> State<T> {
 
     pub fn set(&self, value: T) {
         self.inner_mut().value = value;
-        self.inner().run_effects();
+        self.inner_mut().run_effects();
     }
 
     pub fn update<U>(&self, updater: U)
@@ -44,7 +44,7 @@ impl<T> State<T> {
         updater(&mut self.inner_mut().value);
 
         self.inner_mut().add_active_effect();
-        self.inner().run_effects();
+        self.inner_mut().run_effects();
     }
 
     /// Spawn local future which listen receiver and update state when receiving messages
@@ -71,7 +71,7 @@ impl<T> State<T> {
         unsafe { &*self.0.get() }
     }
 
-    fn inner_mut(&self) -> &mut StateInner<T> {
+    pub(crate) fn inner_mut(&self) -> &mut StateInner<T> {
         unsafe { &mut *self.0.get() }
     }
 }

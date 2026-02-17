@@ -1,9 +1,9 @@
 use crate::Effect;
 
 #[derive(Default)]
-pub(super) struct StateInner<T> {
+pub(crate) struct StateInner<T> {
     pub(super) value: T,
-    effects: Vec<Effect>,
+    pub(crate) effects: Vec<Effect>,
 }
 
 impl<T> StateInner<T> {
@@ -13,8 +13,8 @@ impl<T> StateInner<T> {
         Self { value, effects }
     }
 
-    pub(super) fn run_effects(&self) {
-        self.effects.iter().for_each(|e| e.call());
+    pub(super) fn run_effects(&mut self) {
+        self.effects.iter_mut().for_each(|e| e.call());
     }
 
     pub(super) fn add_active_effect(&mut self) {
