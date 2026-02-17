@@ -71,7 +71,7 @@ where
     state
 }
 
-/// Run tests in single thread
+/// Run tests in a single thread!
 ///
 /// `cargo test -- --test-threads=1`
 #[cfg(test)]
@@ -122,10 +122,33 @@ mod tests {
     }
 
     #[test]
-    fn test_monitors_all() {
+    fn effect_deactivate() {
         gtk_safe_init();
 
-        let monitors = Monitor::all();
-        assert!(!monitors.is_empty());
+        let state1 = state(1);
+        let state2 = state(2);
+        let count = Rc::new(Cell::new(0));
+
+        effect(clone!(
+            #[weak]
+            state1,
+            #[weak]
+            state2,
+            #[weak]
+            count,
+            move || {
+                let sum = state1.get() + state2.get();
+                count.set(sum);
+            }
+        ));
+
+        state1.set(2);
+        assert_eq!(count.get(), 4);
+
+        drop(state1);
+
+        state2.set(42);
+        assert_eq!(count.get(), 4);
+        assert_eq!(state2.inner().effects.len(), 0);
     }
 }
