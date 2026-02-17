@@ -1,6 +1,6 @@
 mod inner;
 
-use crate::effect::inner::EffectInner;
+use crate::{State, effect::inner::EffectInner};
 use std::{cell::RefCell, rc::Rc};
 
 thread_local! {
@@ -41,6 +41,8 @@ impl Effect {
     pub(crate) fn set_active(maybe_effect: Option<Effect>) {
         ACTIVE_EFFECT.with_borrow_mut(|e| *e = maybe_effect);
     }
+
+    pub(crate) fn register<T>(&self, state: &State<T>) {}
 
     pub(crate) fn call(&self) {
         self.inner.borrow().call();

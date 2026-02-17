@@ -1,29 +1,34 @@
 pub(crate) mod inner;
 
-use gtk::glib::{self, clone::Downgrade};
-use tokio::sync::broadcast;
-
-use crate::inner::StateInner;
+use crate::{Effect, inner::StateInner};
 use core::fmt;
+use gtk::glib::{self, Downgrade, clone::Downgrade};
 use std::{
     cell::UnsafeCell,
     fmt::{Debug, Display},
     rc::Rc,
 };
+use tokio::sync::broadcast;
 
 /// Reactive state with counter clone semantic
-#[derive(Default)]
-pub struct State<T>(UnsafeCell<StateInner<T>>);
+#[derive(Clone, Default, Downgrade)]
+pub struct State<T>(Rc<UnsafeCell<StateInner<T>>>);
 
 impl<T> State<T> {
     pub fn new(value: T) -> Self {
-        let inner = StateInner::new(value).into();
+        let inner: UnsafeCell<_> = StateInner::new(value).into();
 
-        Self(inner)
+        Self(Rc::new(inner))
     }
 
+    /// Getter
     pub fn get(&self) -> &T {
         self.inner_mut().add_active_effect();
+
+        if let Some(effect) = Effect::active() {
+            effect.register(self);
+        }
+
         self.get_untracked()
     }
 
@@ -32,6 +37,7 @@ impl<T> State<T> {
         &self.inner().value
     }
 
+    /// Setter
     pub fn set(&self, value: T) {
         self.inner_mut().value = value;
         self.inner_mut().run_effects();
@@ -67,7 +73,7 @@ impl<T> State<T> {
         })
     }
 
-    fn inner(&self) -> &StateInner<T> {
+    pub(crate) fn inner(&self) -> &StateInner<T> {
         unsafe { &*self.0.get() }
     }
 
@@ -77,13 +83,13 @@ impl<T> State<T> {
 }
 
 impl<T: Debug> fmt::Debug for State<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.get().fmt(f)
     }
 }
 
 impl<T: Display> fmt::Display for State<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.get().fmt(f)
     }
 }
