@@ -2,7 +2,7 @@ pub(crate) mod inner;
 
 use crate::{Effect, inner::StateInner};
 use core::fmt;
-use gtk::glib::{self, Downgrade, clone::Downgrade};
+use gtk::glib::{self, clone::Downgrade};
 use std::{
     cell::UnsafeCell,
     fmt::{Debug, Display},
@@ -11,21 +11,22 @@ use std::{
 use tokio::sync::broadcast;
 
 /// Reactive state with counter clone semantic
-#[derive(Clone, Default, Downgrade)]
-pub struct State<T>(Rc<UnsafeCell<StateInner<T>>>);
+#[derive(Default)]
+pub struct State<T>(UnsafeCell<StateInner<T>>)
+where
+    T: 'static;
 
 impl<T> State<T> {
-    pub fn new(value: T) -> Self {
-        let inner: UnsafeCell<_> = StateInner::new(value).into();
-
-        Self(Rc::new(inner))
+    pub fn new(value: T) -> Rc<Self> {
+        let inner = StateInner::new(value).into();
+        Rc::new(Self(inner))
     }
 
     /// Getter
-    pub fn get(&self) -> &T {
-        self.inner_mut().add_active_effect();
-
-        if let Some(effect) = Effect::active() {
+    pub fn get(self: &Rc<Self>) -> &T {
+        if self.inner_mut().add_active_effect()
+            && let Some(effect) = Effect::active()
+        {
             effect.register(self);
         }
 
@@ -43,13 +44,17 @@ impl<T> State<T> {
         self.inner_mut().run_effects();
     }
 
-    pub fn update<U>(&self, updater: U)
+    pub fn update<U>(self: &Rc<Self>, updater: U)
     where
         U: FnOnce(&mut T),
     {
         updater(&mut self.inner_mut().value);
 
-        self.inner_mut().add_active_effect();
+        if self.inner_mut().add_active_effect()
+            && let Some(effect) = Effect::active()
+        {
+            effect.register(self);
+        }
         self.inner_mut().run_effects();
     }
 
@@ -84,12 +89,12 @@ impl<T> State<T> {
 
 impl<T: Debug> fmt::Debug for State<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.get().fmt(f)
+        self.0.get().fmt(f)
     }
 }
 
 impl<T: Display> fmt::Display for State<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.get().fmt(f)
+        self.0.get().fmt(f)
     }
 }

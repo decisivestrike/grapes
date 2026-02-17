@@ -1,6 +1,7 @@
 mod inner;
 
 use crate::{State, effect::inner::EffectInner};
+use std::hash::{Hash, Hasher};
 use std::{cell::RefCell, rc::Rc};
 
 thread_local! {
@@ -42,12 +43,19 @@ impl Effect {
         ACTIVE_EFFECT.with_borrow_mut(|e| *e = maybe_effect);
     }
 
-    pub(crate) fn register<T>(&self, state: &State<T>) {}
+    pub(crate) fn register<T>(&self, state: &Rc<State<T>>)
+    where
+        T: 'static,
+    {
+        self.inner.borrow_mut().add_state(state);
+    }
 
     pub(crate) fn call(&self) {
         self.inner.borrow().call();
     }
+}
 
+impl Effect {
     pub(crate) fn count() -> u32 {
         EFFECT_COUNT.with_borrow(|c| *c)
     }
@@ -74,3 +82,9 @@ impl PartialEq for Effect {
 }
 
 impl Eq for Effect {}
+
+impl Hash for Effect {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}

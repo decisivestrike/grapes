@@ -1,5 +1,6 @@
 use crate::State;
-use std::rc::Weak;
+use gtk::glib::clone::Downgrade;
+use std::rc::{Rc, Weak};
 
 trait ContainsEffect {
     fn remove_effect(&self, id: u32);
@@ -20,10 +21,17 @@ impl EffectInner {
     pub fn new(f: impl Fn() + 'static) -> Self {
         Self {
             f: Box::new(f),
-            deps: Vec::new(),
+            deps: Default::default(),
         }
     }
 
+    /// Adds state as dependency
+    pub fn add_state<T>(&mut self, state: &Rc<State<T>>) {
+        let weak_state = state.downgrade();
+        self.deps.push(weak_state);
+    }
+
+    /// Calls effect fn
     pub fn call(&self) {
         (self.f)();
     }
