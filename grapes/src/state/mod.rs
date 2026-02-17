@@ -87,6 +87,14 @@ impl<T> State<T> {
     }
 }
 
+impl<T> Drop for State<T> {
+    fn drop(&mut self) {
+        for e in self.inner_mut().effects.iter() {
+            e.deactivate();
+        }
+    }
+}
+
 impl<T: Debug> fmt::Debug for State<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.get().fmt(f)

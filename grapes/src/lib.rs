@@ -77,7 +77,9 @@ where
 #[cfg(test)]
 mod tests {
     use crate::prelude::{monitor::GrapesMonitorExt, *};
+    use crate::*;
     use gtk::gdk::Monitor;
+    use std::cell::Cell;
 
     static mut IS_INIT: bool = false;
 
@@ -91,15 +93,36 @@ mod tests {
     }
 
     #[test]
-    fn test_monitors_all() {
+    fn state_get() {
         gtk_safe_init();
 
-        let monitors = Monitor::all();
-        assert!(!monitors.is_empty());
+        let state = state(0);
+
+        assert_eq!(*state.get(), 0);
     }
 
     #[test]
-    fn test_monitors_all2() {
+    fn state_set_with_effect() {
+        gtk_safe_init();
+
+        let state = state(0);
+        let count = Rc::new(Cell::new(0));
+
+        effect(clone!(
+            #[strong]
+            state,
+            #[strong]
+            count,
+            move || count.set(*state.get())
+        ));
+
+        state.set(52);
+
+        assert_eq!(count.get(), 52);
+    }
+
+    #[test]
+    fn test_monitors_all() {
         gtk_safe_init();
 
         let monitors = Monitor::all();
