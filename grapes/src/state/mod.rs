@@ -17,9 +17,10 @@ where
     T: 'static;
 
 impl<T> State<T> {
-    pub fn new(value: T) -> Rc<Self> {
+    pub fn new(value: T) -> Self {
         let inner = StateInner::new(value).into();
-        Rc::new(Self(inner))
+
+        Self(inner)
     }
 
     /// Getter
@@ -49,12 +50,6 @@ impl<T> State<T> {
         U: FnOnce(&mut T),
     {
         updater(&mut self.inner_mut().value);
-
-        if self.inner_mut().add_active_effect()
-            && let Some(effect) = Effect::active()
-        {
-            effect.register(self);
-        }
         self.inner_mut().run_effects();
     }
 
@@ -76,6 +71,10 @@ impl<T> State<T> {
                 state.set(value)
             }
         })
+    }
+
+    pub fn effect_count(&self) -> usize {
+        self.inner().effects.len()
     }
 
     pub(crate) fn inner(&self) -> &StateInner<T> {
