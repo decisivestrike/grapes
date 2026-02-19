@@ -34,7 +34,7 @@ pub use gtk::pango;
 pub use layer_shell;
 pub use tokio;
 
-use gtk::glib::clone;
+use gtk::glib::clone::Downgrade;
 use std::rc::Rc;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
@@ -78,11 +78,14 @@ where
 {
     let state = state(f());
 
-    effect(clone!(
-        #[weak]
-        state,
-        move || state.set(f())
-    ));
+    effect({
+        let weak_state = state.downgrade();
+        move || {
+            if let Some(state) = weak_state.upgrade() {
+                state.set(f())
+            }
+        }
+    });
 
     state
 }
@@ -93,6 +96,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use gtk::glib::clone;
     use std::cell::Cell;
 
     static mut IS_INIT: bool = false;
