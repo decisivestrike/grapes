@@ -202,32 +202,31 @@ mod tests {
     fn effect_deactivate() {
         gtk_safe_init();
 
-        let state1 = state(1);
-        let state2 = state(2);
-        let count = Rc::new(Cell::new(0));
+        let first = state(1);
+        let second = state(2);
+        let sum = Rc::new(Cell::new(0));
 
         effect(clone!(
             #[weak]
-            state1,
+            first,
             #[weak]
-            state2,
+            second,
             #[weak]
-            count,
+            sum,
             move || {
-                let sum = state1.get() + state2.get();
-                count.set(sum);
+                sum.set(first.get() + second.get());
             }
         ));
 
-        state1.set(2);
-        assert_eq!(count.get(), 4);
+        first.set(2);
+        assert_eq!(sum.get(), 4);
 
-        drop(state1);
+        drop(first);
 
-        state2.set(42);
+        second.set(42);
 
-        assert_eq!(count.get(), 4);
-        assert_eq!(state2.effect_count(), 0);
+        assert_eq!(sum.get(), 4);
+        assert_eq!(second.effect_count(), 0);
     }
 
     #[test]
