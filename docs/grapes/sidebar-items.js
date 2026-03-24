@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Component","WindowComponent"],"fn":["derived","effect","state"],"mod":["component","css","effect","extensions","prelude","reactive","state"],"static":["RT"],"struct":["Task"]};
