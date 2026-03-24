@@ -1,2 +1,0 @@
-createSrcSidebar('[["grapes",["",[["effect",[],["inner.rs","mod.rs"]],["extensions",[],["containers.rs","mod.rs","monitor.rs"]],["state",[],["inner.rs","mod.rs"]]],["component.rs","css.rs","lib.rs","prelude.rs","reactive.rs","task.rs"]]],["grapes_components",["",[],["lib.rs","statefull_label.rs"]]],["grapes_macros",["",[],["lib.rs","utils.rs"]]]]');
-//{"start":19,"fragment_lengths":[218,62,48]}
