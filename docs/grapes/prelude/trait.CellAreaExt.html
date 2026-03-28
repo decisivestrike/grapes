@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `CellAreaExt` trait in crate `grapes`."><title>CellAreaExt in grapes::prelude - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="grapes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.0 (4a4ef493e 2026-03-02)" data-channel="1.94.0" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-7bab91a1.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">CellAreaExt</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../grapes/index.html">grapes</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Cell<wbr>Area<wbr>Ext</a></h2><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.activate" title="activate">activate</a></li><li><a href="#method.activate_cell" title="activate_cell">activate_cell</a></li><li><a href="#method.add" title="add">add</a></li><li><a href="#method.add_focus_sibling" title="add_focus_sibling">add_focus_sibling</a></li><li><a href="#method.apply_attributes" title="apply_attributes">apply_attributes</a></li><li><a href="#method.attribute_connect" title="attribute_connect">attribute_connect</a></li><li><a href="#method.attribute_disconnect" title="attribute_disconnect">attribute_disconnect</a></li><li><a href="#method.attribute_get_column" title="attribute_get_column">attribute_get_column</a></li><li><a href="#method.cell_allocation" title="cell_allocation">cell_allocation</a></li><li><a href="#method.cell_at_position" title="cell_at_position">cell_at_position</a></li><li><a href="#method.connect_add_editable" title="connect_add_editable">connect_add_editable</a></li><li><a href="#method.connect_apply_attributes" title="connect_apply_attributes">connect_apply_attributes</a></li><li><a href="#method.connect_edit_widget_notify" title="connect_edit_widget_notify">connect_edit_widget_notify</a></li><li><a href="#method.connect_edited_cell_notify" title="connect_edited_cell_notify">connect_edited_cell_notify</a></li><li><a href="#method.connect_focus_cell_notify" title="connect_focus_cell_notify">connect_focus_cell_notify</a></li><li><a href="#method.connect_focus_changed" title="connect_focus_changed">connect_focus_changed</a></li><li><a href="#method.connect_remove_editable" title="connect_remove_editable">connect_remove_editable</a></li><li><a href="#method.copy_context" title="copy_context">copy_context</a></li><li><a href="#method.create_context" title="create_context">create_context</a></li><li><a href="#method.current_path_string" title="current_path_string">current_path_string</a></li><li><a href="#method.edit_widget" title="edit_widget">edit_widget</a></li><li><a href="#method.edited_cell" title="edited_cell">edited_cell</a></li><li><a href="#method.event" title="event">event</a></li><li><a href="#method.focus" title="focus">focus</a></li><li><a href="#method.focus_cell" title="focus_cell">focus_cell</a></li><li><a href="#method.focus_from_sibling" title="focus_from_sibling">focus_from_sibling</a></li><li><a href="#method.focus_siblings" title="focus_siblings">focus_siblings</a></li><li><a href="#method.foreach" title="foreach">foreach</a></li><li><a href="#method.foreach_alloc" title="foreach_alloc">foreach_alloc</a></li><li><a href="#method.has_renderer" title="has_renderer">has_renderer</a></li><li><a href="#method.inner_cell_area" title="inner_cell_area">inner_cell_area</a></li><li><a href="#method.is_activatable" title="is_activatable">is_activatable</a></li><li><a href="#method.is_focus_sibling" title="is_focus_sibling">is_focus_sibling</a></li><li><a href="#method.preferred_height" title="preferred_height">preferred_height</a></li><li><a href="#method.preferred_height_for_width" title="preferred_height_for_width">preferred_height_for_width</a></li><li><a href="#method.preferred_width" title="preferred_width">preferred_width</a></li><li><a href="#method.preferred_width_for_height" title="preferred_width_for_height">preferred_width_for_height</a></li><li><a href="#method.remove" title="remove">remove</a></li><li><a href="#method.remove_focus_sibling" title="remove_focus_sibling">remove_focus_sibling</a></li><li><a href="#method.request_mode" title="request_mode">request_mode</a></li><li><a href="#method.request_renderer" title="request_renderer">request_renderer</a></li><li><a href="#method.set_focus_cell" title="set_focus_cell">set_focus_cell</a></li><li><a href="#method.snapshot" title="snapshot">snapshot</a></li><li><a href="#method.stop_editing" title="stop_editing">stop_editing</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In grapes::<wbr>prelude</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">grapes</a>::<wbr><a href="index.html">prelude</a></div><h1>Trait <span class="trait">Cell<wbr>Area<wbr>Ext</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><pre class="rust item-decl"><code>pub trait CellAreaExt: <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellArea&gt; + 'static {
+<details class="toggle type-contents-toggle"><summary class="hideme"><span>Show 44 methods</span></summary>    // Provided methods
+    fn <a href="#method.activate" class="fn">activate</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        cell_area: &amp;Rectangle,
+        flags: CellRendererState,
+        edit_only: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+    ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.activate_cell" class="fn">activate_cell</a>(
+        &amp;self,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        event: impl <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;Event&gt;,
+        cell_area: &amp;Rectangle,
+        flags: CellRendererState,
+    ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.add" class="fn">add</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.add_focus_sibling" class="fn">add_focus_sibling</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        sibling: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    ) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.apply_attributes" class="fn">apply_attributes</a>(
+        &amp;self,
+        tree_model: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;TreeModel&gt;,
+        iter: &amp;TreeIter,
+        is_expander: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+        is_expanded: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+    ) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.attribute_connect" class="fn">attribute_connect</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        attribute: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.str.html">str</a>,
+        column: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+    ) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.attribute_disconnect" class="fn">attribute_disconnect</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        attribute: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.str.html">str</a>,
+    ) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.attribute_get_column" class="fn">attribute_get_column</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        attribute: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.str.html">str</a>,
+    ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.copy_context" class="fn">copy_context</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    ) -&gt; CellAreaContext { ... }
+<span class="item-spacer"></span>    fn <a href="#method.create_context" class="fn">create_context</a>(&amp;self) -&gt; CellAreaContext { ... }
+<span class="item-spacer"></span>    fn <a href="#method.event" class="fn">event</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        event: impl <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;Event&gt;,
+        cell_area: &amp;Rectangle,
+        flags: CellRendererState,
+    ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.focus" class="fn">focus</a>(&amp;self, direction: DirectionType) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.foreach" class="fn">foreach</a>&lt;P&gt;(&amp;self, callback: P)
+       <span class="where">where P: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;CellRenderer) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.foreach_alloc" class="fn">foreach_alloc</a>&lt;P&gt;(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        cell_area: &amp;Rectangle,
+        background_area: &amp;Rectangle,
+        callback: P,
+    )
+       <span class="where">where P: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;CellRenderer, &amp;Rectangle, &amp;Rectangle) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.cell_allocation" class="fn">cell_allocation</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        cell_area: &amp;Rectangle,
+    ) -&gt; Rectangle { ... }
+<span class="item-spacer"></span>    fn <a href="#method.cell_at_position" class="fn">cell_at_position</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        cell_area: &amp;Rectangle,
+        x: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+        y: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+    ) -&gt; (CellRenderer, Rectangle) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.current_path_string" class="fn">current_path_string</a>(&amp;self) -&gt; GString { ... }
+<span class="item-spacer"></span>    fn <a href="#method.edit_widget" class="fn">edit_widget</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellEditable&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.edited_cell" class="fn">edited_cell</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellRenderer&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.focus_cell" class="fn">focus_cell</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellRenderer&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.focus_from_sibling" class="fn">focus_from_sibling</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    ) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellRenderer&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.focus_siblings" class="fn">focus_siblings</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.94.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;CellRenderer&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.preferred_height" class="fn">preferred_height</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    ) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.preferred_height_for_width" class="fn">preferred_height_for_width</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        width: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+    ) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.preferred_width" class="fn">preferred_width</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    ) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.preferred_width_for_height" class="fn">preferred_width_for_height</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        height: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+    ) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.request_mode" class="fn">request_mode</a>(&amp;self) -&gt; SizeRequestMode { ... }
+<span class="item-spacer"></span>    fn <a href="#method.has_renderer" class="fn">has_renderer</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.inner_cell_area" class="fn">inner_cell_area</a>(
+        &amp;self,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        cell_area: &amp;Rectangle,
+    ) -&gt; Rectangle { ... }
+<span class="item-spacer"></span>    fn <a href="#method.is_activatable" class="fn">is_activatable</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.is_focus_sibling" class="fn">is_focus_sibling</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        sibling: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.remove" class="fn">remove</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.remove_focus_sibling" class="fn">remove_focus_sibling</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        sibling: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    ) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.request_renderer" class="fn">request_renderer</a>(
+        &amp;self,
+        renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+        orientation: Orientation,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        for_size: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+    ) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.set_focus_cell" class="fn">set_focus_cell</a>(&amp;self, renderer: <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;&gt;) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.snapshot" class="fn">snapshot</a>(
+        &amp;self,
+        context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+        widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+        snapshot: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Snapshot&gt;,
+        background_area: &amp;Rectangle,
+        cell_area: &amp;Rectangle,
+        flags: CellRendererState,
+        paint_focus: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+    ) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.stop_editing" class="fn">stop_editing</a>(&amp;self, canceled: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_add_editable" class="fn">connect_add_editable</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;CellRenderer, &amp;CellEditable, &amp;Rectangle, TreePath) + 'static</span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_apply_attributes" class="fn">connect_apply_attributes</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;TreeModel, &amp;TreeIter, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>) + 'static</span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_focus_changed" class="fn">connect_focus_changed</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;CellRenderer, TreePath) + 'static</span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_remove_editable" class="fn">connect_remove_editable</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;CellRenderer, &amp;CellEditable) + 'static</span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_edit_widget_notify" class="fn">connect_edit_widget_notify</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self) + 'static</span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_edited_cell_notify" class="fn">connect_edited_cell_notify</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self) + 'static</span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.connect_focus_cell_notify" class="fn">connect_focus_cell_notify</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self) + 'static</span> { ... }
+</details>}</code></pre><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><section id="method.activate" class="method"><h4 class="code-header">fn <a href="#method.activate" class="fn">activate</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    cell_area: &amp;Rectangle,
+    flags: CellRendererState,
+    edit_only: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.activate_cell" class="method"><h4 class="code-header">fn <a href="#method.activate_cell" class="fn">activate_cell</a>(
+    &amp;self,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    event: impl <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;Event&gt;,
+    cell_area: &amp;Rectangle,
+    flags: CellRendererState,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.add" class="method"><h4 class="code-header">fn <a href="#method.add" class="fn">add</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.add_focus_sibling" class="method"><h4 class="code-header">fn <a href="#method.add_focus_sibling" class="fn">add_focus_sibling</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    sibling: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.apply_attributes" class="method"><h4 class="code-header">fn <a href="#method.apply_attributes" class="fn">apply_attributes</a>(
+    &amp;self,
+    tree_model: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;TreeModel&gt;,
+    iter: &amp;TreeIter,
+    is_expander: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+    is_expanded: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.attribute_connect" class="method"><h4 class="code-header">fn <a href="#method.attribute_connect" class="fn">attribute_connect</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    attribute: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.str.html">str</a>,
+    column: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.attribute_disconnect" class="method"><h4 class="code-header">fn <a href="#method.attribute_disconnect" class="fn">attribute_disconnect</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    attribute: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.str.html">str</a>,
+)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.attribute_get_column" class="method"><h4 class="code-header">fn <a href="#method.attribute_get_column" class="fn">attribute_get_column</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    attribute: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.str.html">str</a>,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.copy_context" class="method"><h4 class="code-header">fn <a href="#method.copy_context" class="fn">copy_context</a>(&amp;self, context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;) -&gt; CellAreaContext</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.create_context" class="method"><h4 class="code-header">fn <a href="#method.create_context" class="fn">create_context</a>(&amp;self) -&gt; CellAreaContext</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.event" class="method"><h4 class="code-header">fn <a href="#method.event" class="fn">event</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    event: impl <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;Event&gt;,
+    cell_area: &amp;Rectangle,
+    flags: CellRendererState,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.focus" class="method"><h4 class="code-header">fn <a href="#method.focus" class="fn">focus</a>(&amp;self, direction: DirectionType) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.foreach" class="method"><h4 class="code-header">fn <a href="#method.foreach" class="fn">foreach</a>&lt;P&gt;(&amp;self, callback: P)<div class="where">where
+    P: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;CellRenderer) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.foreach_alloc" class="method"><h4 class="code-header">fn <a href="#method.foreach_alloc" class="fn">foreach_alloc</a>&lt;P&gt;(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    cell_area: &amp;Rectangle,
+    background_area: &amp;Rectangle,
+    callback: P,
+)<div class="where">where
+    P: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;CellRenderer, &amp;Rectangle, &amp;Rectangle) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.cell_allocation" class="method"><h4 class="code-header">fn <a href="#method.cell_allocation" class="fn">cell_allocation</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    cell_area: &amp;Rectangle,
+) -&gt; Rectangle</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.cell_at_position" class="method"><h4 class="code-header">fn <a href="#method.cell_at_position" class="fn">cell_at_position</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    cell_area: &amp;Rectangle,
+    x: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+    y: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+) -&gt; (CellRenderer, Rectangle)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.current_path_string" class="method"><h4 class="code-header">fn <a href="#method.current_path_string" class="fn">current_path_string</a>(&amp;self) -&gt; GString</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.edit_widget" class="method"><h4 class="code-header">fn <a href="#method.edit_widget" class="fn">edit_widget</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellEditable&gt;</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.edited_cell" class="method"><h4 class="code-header">fn <a href="#method.edited_cell" class="fn">edited_cell</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellRenderer&gt;</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.focus_cell" class="method"><h4 class="code-header">fn <a href="#method.focus_cell" class="fn">focus_cell</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellRenderer&gt;</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.focus_from_sibling" class="method"><h4 class="code-header">fn <a href="#method.focus_from_sibling" class="fn">focus_from_sibling</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;CellRenderer&gt;</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.focus_siblings" class="method"><h4 class="code-header">fn <a href="#method.focus_siblings" class="fn">focus_siblings</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.94.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;CellRenderer&gt;</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.preferred_height" class="method"><h4 class="code-header">fn <a href="#method.preferred_height" class="fn">preferred_height</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.preferred_height_for_width" class="method"><h4 class="code-header">fn <a href="#method.preferred_height_for_width" class="fn">preferred_height_for_width</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    width: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.preferred_width" class="method"><h4 class="code-header">fn <a href="#method.preferred_width" class="fn">preferred_width</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.preferred_width_for_height" class="method"><h4 class="code-header">fn <a href="#method.preferred_width_for_height" class="fn">preferred_width_for_height</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    height: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.request_mode" class="method"><h4 class="code-header">fn <a href="#method.request_mode" class="fn">request_mode</a>(&amp;self) -&gt; SizeRequestMode</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.has_renderer" class="method"><h4 class="code-header">fn <a href="#method.has_renderer" class="fn">has_renderer</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.inner_cell_area" class="method"><h4 class="code-header">fn <a href="#method.inner_cell_area" class="fn">inner_cell_area</a>(
+    &amp;self,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    cell_area: &amp;Rectangle,
+) -&gt; Rectangle</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.is_activatable" class="method"><h4 class="code-header">fn <a href="#method.is_activatable" class="fn">is_activatable</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.is_focus_sibling" class="method"><h4 class="code-header">fn <a href="#method.is_focus_sibling" class="fn">is_focus_sibling</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    sibling: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.remove" class="method"><h4 class="code-header">fn <a href="#method.remove" class="fn">remove</a>(&amp;self, renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.remove_focus_sibling" class="method"><h4 class="code-header">fn <a href="#method.remove_focus_sibling" class="fn">remove_focus_sibling</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    sibling: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.request_renderer" class="method"><h4 class="code-header">fn <a href="#method.request_renderer" class="fn">request_renderer</a>(
+    &amp;self,
+    renderer: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;,
+    orientation: Orientation,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    for_size: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>,
+) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.i32.html">i32</a>)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.set_focus_cell" class="method"><h4 class="code-header">fn <a href="#method.set_focus_cell" class="fn">set_focus_cell</a>(&amp;self, renderer: <a class="enum" href="https://doc.rust-lang.org/1.94.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellRenderer&gt;&gt;)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.snapshot" class="method"><h4 class="code-header">fn <a href="#method.snapshot" class="fn">snapshot</a>(
+    &amp;self,
+    context: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellAreaContext&gt;,
+    widget: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Widget&gt;,
+    snapshot: &amp;impl <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;Snapshot&gt;,
+    background_area: &amp;Rectangle,
+    cell_area: &amp;Rectangle,
+    flags: CellRendererState,
+    paint_focus: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>,
+)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.stop_editing" class="method"><h4 class="code-header">fn <a href="#method.stop_editing" class="fn">stop_editing</a>(&amp;self, canceled: <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>)</h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_add_editable" class="method"><h4 class="code-header">fn <a href="#method.connect_add_editable" class="fn">connect_add_editable</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;CellRenderer, &amp;CellEditable, &amp;Rectangle, TreePath) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_apply_attributes" class="method"><h4 class="code-header">fn <a href="#method.connect_apply_attributes" class="fn">connect_apply_attributes</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;TreeModel, &amp;TreeIter, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>, <a class="primitive" href="https://doc.rust-lang.org/1.94.0/std/primitive.bool.html">bool</a>) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_focus_changed" class="method"><h4 class="code-header">fn <a href="#method.connect_focus_changed" class="fn">connect_focus_changed</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;CellRenderer, TreePath) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_remove_editable" class="method"><h4 class="code-header">fn <a href="#method.connect_remove_editable" class="fn">connect_remove_editable</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self, &amp;CellRenderer, &amp;CellEditable) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_edit_widget_notify" class="method"><h4 class="code-header">fn <a href="#method.connect_edit_widget_notify" class="fn">connect_edit_widget_notify</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_edited_cell_notify" class="method"><h4 class="code-header">fn <a href="#method.connect_edited_cell_notify" class="fn">connect_edited_cell_notify</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span><section id="method.connect_focus_cell_notify" class="method"><h4 class="code-header">fn <a href="#method.connect_focus_cell_notify" class="fn">connect_focus_cell_notify</a>&lt;F&gt;(&amp;self, f: F) -&gt; SignalHandlerId<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.94.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Self) + 'static,</div></h4></section><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Since 4.10</span></div></span></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/1.94.0/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><section id="impl-CellAreaExt-for-O" class="impl"><a href="#impl-CellAreaExt-for-O" class="anchor">§</a><h3 class="code-header">impl&lt;O&gt; <a class="trait" href="trait.CellAreaExt.html" title="trait grapes::prelude::CellAreaExt">CellAreaExt</a> for O<div class="where">where
+    O: <a class="trait" href="trait.IsA.html" title="trait grapes::prelude::IsA">IsA</a>&lt;CellArea&gt;,</div></h3></section></div><script src="../../trait.impl/gtk4/auto/cell_area/trait.CellAreaExt.js" async></script></section></div></main></body></html>
