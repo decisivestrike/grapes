@@ -5,8 +5,8 @@ edition = "2024"
 
 [dependencies]
 grapes-macros = { path = "../grapes-macros" }
-gtk = { version = "0.10.3", package = "gtk4", features = ["v4_20"] }
-layer-shell = { version = "0.7.1", package = "gtk4-layer-shell" }
+gtk = { version = "0.11.3", package = "gtk4", features = ["v4_20"] }
+layer-shell = { version = "0.8.0", package = "gtk4-layer-shell" }
 tokio = { version = "1.48.0", features = ["full", "tracing"] }
 tokio-util = "0.7.18"
 
